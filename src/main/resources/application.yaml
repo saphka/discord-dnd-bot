@@ -1,3 +1,6 @@
 spring:
   application:
     name: discord-bot-app
+
+bot:
+  app-id: 1066031966450876558
