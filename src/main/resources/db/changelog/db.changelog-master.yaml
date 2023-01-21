@@ -1,0 +1,4 @@
+databaseChangeLog:
+  - include:
+      file: 20230121-01-game.yaml
+      relativeToChangelogFile: true

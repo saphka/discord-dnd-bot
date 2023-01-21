@@ -1,0 +1,47 @@
+{
+  "name": "game",
+  "description": "Games menu",
+  "options": [
+    {
+      "name": "create",
+      "description": "Create game",
+      "type": 1,
+      "options": [
+        {
+          "name": "slug",
+          "description": "Game slug",
+          "type": 3,
+          "max_length": 20,
+          "required": true
+        },
+        {
+          "name": "name",
+          "description": "Game name",
+          "type": 3,
+          "max_length": 255,
+          "required": true
+        },
+        {
+          "name": "date",
+          "description": "Game date YYYY-MM-DD HH:MM",
+          "type": 3,
+          "min_length": 16,
+          "max_length": 16,
+          "required": true
+        },
+        {
+          "name": "tier",
+          "description": "Game tier",
+          "type": 3,
+          "max_length": 20,
+          "required": true
+        }
+      ]
+    },
+    {
+      "name": "list",
+      "description": "List upcoming games",
+      "type": 1
+    }
+  ]
+}

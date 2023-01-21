@@ -1,0 +1,49 @@
+databaseChangeLog:
+  - changeSet:
+      id: 20230121-01-game
+      author: saphka
+      changes:
+        - createTable:
+            tableName: game
+            columns:
+              - column:
+                  name: id
+                  type: long
+                  autoIncrement: true
+                  constraints:
+                    primaryKey: true
+                    nullable: false
+              - column:
+                  name: server_id
+                  type: long
+                  constraints:
+                    nullable: false
+              - column:
+                  name: slug
+                  type: varchar(20)
+                  constraints:
+                    nullable: false
+              - column:
+                  name: name
+                  type: varchar(255)
+                  constraints:
+                    nullable: false
+              - column:
+                  name: starts_at
+                  type: timestamp
+                  constraints:
+                    nullable: false
+              - column:
+                  name: tier
+                  type: varchar(20)
+                  constraints:
+                    nullable: false
+        - createIndex:
+            tableName: game
+            indexName: game_server_id_slug_uindex
+            unique: true
+            columns:
+              - column:
+                  name: server_id
+              - column:
+                  name: slug

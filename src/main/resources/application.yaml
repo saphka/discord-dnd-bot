@@ -1,6 +1,14 @@
 spring:
   application:
     name: discord-bot-app
+  r2dbc:
+    url: 'r2dbc:h2:file:///~/database/dndbot'
+    username: sa
+    password:
+  liquibase:
+    url: 'jdbc:h2:file:~/database/dndbot'
+    user: ${spring.r2dbc.username}
+    password: ${spring.r2dbc.password}
 
 bot:
   app-id: 1066031966450876558
