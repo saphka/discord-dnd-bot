@@ -35,7 +35,13 @@ class CharacterService(
     }
 
     fun getBySlug(serverId: Long, slug: String): Mono<CharacterDTO> {
-        return repository.findFirstByServerIdAndSlug(serverId, slug).map { mapper.toDto(it) }
+        return repository.findFirstByServerIdAndSlug(serverId, slug)
+            .map { mapper.toDto(it) }
+            .switchIfEmpty(
+                Mono.error {
+                    IllegalArgumentException("character with slug $slug not found")
+                }
+            )
     }
 
     fun getByIds(ids: Flux<Long>): Flux<CharacterDTO> {
