@@ -49,7 +49,7 @@ class CharacterCommandHandler(
         }
             .collectList()
             .flatMap {
-                event.reply().withEmbeds(it).withEphemeral(true)
+                event.reply().withEmbeds(it).withEphemeral(true).withContent("Registered characters")
             }
     }
 

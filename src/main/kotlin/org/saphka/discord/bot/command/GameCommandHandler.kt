@@ -40,7 +40,9 @@ class GameCommandHandler(
             }
             .collectList()
             .flatMap {
-                event.reply().withEmbeds(it).withEphemeral(true)
+                event.reply()
+                    .withContent("Upcoming games")
+                    .withEmbeds(it).withEphemeral(true)
             }
     }
 

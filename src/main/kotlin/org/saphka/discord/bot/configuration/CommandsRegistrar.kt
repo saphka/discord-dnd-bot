@@ -9,7 +9,7 @@ import org.springframework.beans.factory.annotation.Value
 import org.springframework.core.io.Resource
 import org.springframework.stereotype.Component
 
-const val serverId = 1066062957974392893
+//const val serverId = 1066062957974392893
 
 @Component
 class CommandsRegistrar(
@@ -23,9 +23,9 @@ class CommandsRegistrar(
     override fun afterPropertiesSet() {
         val specialMapper = JacksonResources.createFromObjectMapper(mapper).objectMapper
 
-        restClient.applicationService.bulkOverwriteGuildApplicationCommand(
+        restClient.applicationService.bulkOverwriteGlobalApplicationCommand(
             botProperties.appId,
-            serverId,
+            // serverId,
             commands.map {
                 it.inputStream.use { inp ->
                     specialMapper.readValue(inp, ApplicationCommandRequest::class.java)
