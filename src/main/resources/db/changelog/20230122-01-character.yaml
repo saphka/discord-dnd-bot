@@ -1,0 +1,54 @@
+databaseChangeLog:
+  - changeSet:
+      id: 20230122-01-character
+      author: saphka
+      changes:
+        - createTable:
+            tableName: character
+            columns:
+              - column:
+                  name: id
+                  type: long
+                  autoIncrement: true
+                  constraints:
+                    primaryKey: true
+                    nullable: false
+              - column:
+                  name: server_id
+                  type: long
+                  constraints:
+                    nullable: false
+              - column:
+                  name: owner_id
+                  type: long
+                  constraints:
+                    nullable: false
+              - column:
+                  name: slug
+                  type: varchar(20)
+                  constraints:
+                    nullable: false
+              - column:
+                  name: name
+                  type: varchar(255)
+                  constraints:
+                    nullable: false
+              - column:
+                  name: sheet
+                  type: varchar(512)
+                  constraints:
+                    nullable: false
+              - column:
+                  name: avatar
+                  type: varchar(512)
+                  constraints:
+                    nullable: false
+        - createIndex:
+            tableName: character
+            indexName: character_server_id_slug_uindex
+            unique: true
+            columns:
+              - column:
+                  name: server_id
+              - column:
+                  name: slug

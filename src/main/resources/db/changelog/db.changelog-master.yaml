@@ -2,3 +2,6 @@ databaseChangeLog:
   - include:
       file: 20230121-01-game.yaml
       relativeToChangelogFile: true
+  - include:
+      file: 20230122-01-character.yaml
+      relativeToChangelogFile: true

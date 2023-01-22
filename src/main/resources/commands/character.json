@@ -1,0 +1,52 @@
+{
+  "name": "character",
+  "description": "Characters menu",
+  "options": [
+    {
+      "name": "create",
+      "description": "Create character",
+      "type": 1,
+      "options": [
+        {
+          "name": "slug",
+          "description": "Character slug",
+          "type": 3,
+          "max_length": 20,
+          "required": true
+        },
+        {
+          "name": "name",
+          "description": "Character name",
+          "type": 3,
+          "max_length": 255,
+          "required": true
+        },
+        {
+          "name": "sheet",
+          "description": "Character sheet URL",
+          "type": 3,
+          "max_length": 512,
+          "required": true
+        },
+        {
+          "name": "avatar",
+          "description": "Character avatar URL",
+          "type": 3,
+          "max_length": 512,
+          "required": true
+        }
+      ]
+    },
+    {
+      "name": "list",
+      "description": "List your characters",
+      "type": 1
+    },
+    {
+      "name": "list-all",
+      "description": "List all characters",
+      "default_member_permissions": "268435456",
+      "type": 1
+    }
+  ]
+}

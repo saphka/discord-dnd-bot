@@ -1,8 +1,10 @@
 package org.saphka.discord.bot.listener
 
 import discord4j.core.event.ReactiveEventAdapter
+import discord4j.core.event.domain.interaction.ChatInputAutoCompleteEvent
 import discord4j.core.event.domain.interaction.ChatInputInteractionEvent
 import org.reactivestreams.Publisher
+import org.saphka.discord.bot.autocomplete.AutocompleteHandler
 import org.saphka.discord.bot.command.CommandHandler
 import org.saphka.discord.bot.exception.ExceptionHandler
 import org.springframework.stereotype.Component
@@ -10,19 +12,27 @@ import reactor.core.publisher.Mono
 
 @Component
 class ApplicationCommandListener constructor(
-    handlers: List<CommandHandler>,
+    commandHandlers: List<CommandHandler>,
+    autocompleteHandlers: List<AutocompleteHandler>,
     private val exceptionHandler: ExceptionHandler
 ) : ReactiveEventAdapter() {
 
-    private val handlersMap: Map<String, CommandHandler>
+    private val commandHandlerMap: Map<String, CommandHandler>
+    private val autocompleteHandlerMap: Map<String, AutocompleteHandler>
 
     init {
-        this.handlersMap = handlers.groupBy(CommandHandler::name).mapValues { it.value.first() }
+        this.commandHandlerMap = commandHandlers.groupBy(CommandHandler::name).mapValues { it.value.first() }
+        this.autocompleteHandlerMap =
+            autocompleteHandlers.groupBy(AutocompleteHandler::field).mapValues { it.value.first() }
     }
 
     override fun onChatInputInteraction(event: ChatInputInteractionEvent): Publisher<*> {
-        return handlersMap[event.commandName]?.handle(event)?.onErrorResume {
+        return commandHandlerMap[event.commandName]?.handle(event)?.onErrorResume {
             exceptionHandler.handleException(event, it)
         } ?: Mono.empty<Void>()
+    }
+
+    override fun onChatInputAutoCompleteInteraction(event: ChatInputAutoCompleteEvent): Publisher<*> {
+        return autocompleteHandlerMap[event.focusedOption.name]?.handle(event) ?: Mono.empty<Void>()
     }
 }

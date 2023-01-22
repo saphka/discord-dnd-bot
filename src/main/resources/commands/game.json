@@ -6,6 +6,7 @@
       "name": "create",
       "description": "Create game",
       "type": 1,
+      "default_member_permissions": "268435456",
       "options": [
         {
           "name": "slug",
@@ -42,6 +43,68 @@
       "name": "list",
       "description": "List upcoming games",
       "type": 1
+    },
+    {
+      "name": "enroll",
+      "description": "Enroll for a game",
+      "type": 1,
+      "options": [
+        {
+          "name": "game-slug",
+          "description": "Game slug",
+          "type": 3,
+          "max_length": 20,
+          "required": true,
+          "autocomplete": true
+        },
+        {
+          "name": "character-slug",
+          "description": "Character slug",
+          "type": 3,
+          "max_length": 20,
+          "required": true,
+          "autocomplete": true
+        }
+      ]
+    },
+    {
+      "name": "un-enroll",
+      "description": "Un-enroll for a game",
+      "type": 1,
+      "options": [
+        {
+          "name": "game-slug",
+          "description": "Game slug",
+          "type": 3,
+          "max_length": 20,
+          "required": true,
+          "autocomplete": true
+        },
+        {
+          "name": "character-slug",
+          "description": "Character slug",
+          "type": 3,
+          "max_length": 20,
+          "required": true,
+          "autocomplete": true
+        }
+      ]
+    },
+    {
+      "name": "list-enrolled",
+      "description": "List enrolled characters",
+      "type": 1,
+      "default_member_permissions": "268435456",
+      "options": [
+        {
+          "name": "game-slug",
+          "description": "Game slug",
+          "type": 3,
+          "max_length": 20,
+          "required": true,
+          "autocomplete": true
+        }
+      ]
     }
   ]
 }
