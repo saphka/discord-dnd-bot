@@ -3,9 +3,11 @@ package org.saphka.discord.bot.service
 import org.saphka.discord.bot.domain.Game
 import org.saphka.discord.bot.model.GameDTO
 import org.saphka.discord.bot.repository.GameRepository
+import org.springframework.dao.DuplicateKeyException
 import org.springframework.stereotype.Service
 import reactor.core.publisher.Flux
 import reactor.core.publisher.Mono
+import java.lang.IllegalArgumentException
 import java.time.LocalDateTime
 
 @Service
@@ -24,6 +26,8 @@ class GameService(
             )
         ).map {
             toDto(it)
+        }.onErrorMap(DuplicateKeyException::class.java) {
+            IllegalArgumentException("game with slug ${game.slug} already exists", it)
         }
     }
 

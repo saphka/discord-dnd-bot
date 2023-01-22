@@ -1,26 +1,28 @@
 package org.saphka.discord.bot.listener
 
-import discord4j.core.GatewayDiscordClient
+import discord4j.core.event.ReactiveEventAdapter
 import discord4j.core.event.domain.interaction.ChatInputInteractionEvent
+import org.reactivestreams.Publisher
 import org.saphka.discord.bot.command.CommandHandler
-import org.springframework.beans.factory.InitializingBean
+import org.saphka.discord.bot.exception.ExceptionHandler
 import org.springframework.stereotype.Component
+import reactor.core.publisher.Mono
 
 @Component
-class ApplicationCommandListener(
-    private val client: GatewayDiscordClient,
-    private val handlers: List<CommandHandler>
-) : InitializingBean {
+class ApplicationCommandListener constructor(
+    handlers: List<CommandHandler>,
+    private val exceptionHandler: ExceptionHandler
+) : ReactiveEventAdapter() {
 
-    lateinit var handlersMap: Map<String, CommandHandler>
+    private val handlersMap: Map<String, CommandHandler>
 
-    override fun afterPropertiesSet() {
-        handlersMap = handlers.groupBy(CommandHandler::name).mapValues { it.value.first() }
-
-        client.on(ChatInputInteractionEvent::class.java) {
-            handlersMap[it.commandName]?.handle(it)
-        }.subscribe()
+    init {
+        this.handlersMap = handlers.groupBy(CommandHandler::name).mapValues { it.value.first() }
     }
 
-
+    override fun onChatInputInteraction(event: ChatInputInteractionEvent): Publisher<*> {
+        return handlersMap[event.commandName]?.handle(event)?.onErrorResume {
+            exceptionHandler.handleException(event, it)
+        } ?: Mono.empty<Void>()
+    }
 }
