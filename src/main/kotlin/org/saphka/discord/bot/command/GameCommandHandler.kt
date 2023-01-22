@@ -12,7 +12,8 @@ import reactor.core.publisher.Mono
 class GameCommandHandler(
     private val messageSource: MessageSource,
     private val service: GameService,
-    private val mapper: GameMapper
+    private val mapper: GameMapper,
+    private val enrollmentCommandHandler: GameEnrollmentCommandHandler
 ) : CommandHandler {
 
     override fun name(): String {
@@ -23,9 +24,9 @@ class GameCommandHandler(
         return when (event.options.first().name) {
             "create" -> handleCreate(event)
             "list" -> handleList(event)
-            "enroll" -> handleEnroll(event)
-            "un-enroll" -> handleUnEnroll(event)
-            "list-enrolled" -> handleListEnrolled(event)
+            "enroll" -> enrollmentCommandHandler.handleEnroll(event)
+            "un-enroll" -> enrollmentCommandHandler.handleUnEnroll(event)
+            "list-enrolled" -> enrollmentCommandHandler.handleListEnrolled(event)
             else -> Mono.empty()
         }
     }
@@ -56,17 +57,4 @@ class GameCommandHandler(
                 )
         }
     }
-
-    private fun handleEnroll(event: ChatInputInteractionEvent): Mono<Void> {
-        TODO("Not yet implemented")
-    }
-
-    private fun handleUnEnroll(event: ChatInputInteractionEvent): Mono<Void> {
-        TODO("Not yet implemented")
-    }
-
-    private fun handleListEnrolled(event: ChatInputInteractionEvent): Mono<Void> {
-        TODO("Not yet implemented")
-    }
-
 }

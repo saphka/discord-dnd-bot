@@ -20,14 +20,14 @@ class CharacterMapper {
         avatar = it.avatar
     )
 
-    fun toEntity(character: CharacterDTO) = Character(
-        id = character.id,
-        serverId = character.serverId,
-        ownerId = character.ownerId,
-        slug = character.slug.lowercase(Locale.getDefault()),
-        name = character.name,
-        sheet = character.sheet,
-        avatar = character.avatar
+    fun toEntity(it: CharacterDTO) = Character(
+        id = it.id,
+        serverId = it.serverId,
+        ownerId = it.ownerId,
+        slug = it.slug.lowercase(Locale.getDefault()),
+        name = it.name,
+        sheet = it.sheet,
+        avatar = it.avatar
     )
 
     fun toEmbed(it: CharacterDTO) = EmbedCreateSpec.builder()

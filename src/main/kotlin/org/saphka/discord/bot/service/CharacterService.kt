@@ -34,5 +34,11 @@ class CharacterService(
             .map { mapper.toDto(it) }
     }
 
+    fun getBySlug(serverId: Long, slug: String): Mono<CharacterDTO> {
+        return repository.findFirstByServerIdAndSlug(serverId, slug).map { mapper.toDto(it) }
+    }
 
+    fun getByIds(ids: Flux<Long>): Flux<CharacterDTO> {
+        return repository.findAllById(ids).map { mapper.toDto(it) }
+    }
 }

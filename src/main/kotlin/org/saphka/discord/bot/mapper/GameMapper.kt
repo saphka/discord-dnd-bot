@@ -16,13 +16,13 @@ class GameMapper {
 
     private val formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm")
 
-    fun toEntity(game: GameDTO) = Game(
-        id = game.id,
-        serverId = game.serverId,
-        slug = game.slug.lowercase(Locale.getDefault()),
-        name = game.name,
-        startsAt = game.startsAt,
-        tier = game.tier
+    fun toEntity(it: GameDTO) = Game(
+        id = it.id,
+        serverId = it.serverId,
+        slug = it.slug.lowercase(Locale.getDefault()),
+        name = it.name,
+        startsAt = it.startsAt,
+        tier = it.tier
     )
 
     fun toDto(it: Game) = GameDTO(

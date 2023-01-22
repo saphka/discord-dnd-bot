@@ -28,4 +28,8 @@ class GameService(
         return repository.findByServerIdAndStartsAtAfter(serverId, LocalDateTime.now())
             .map { mapper.toDto(it) }
     }
+
+    fun getBySlug(serverId: Long, slug: String): Mono<GameDTO> {
+        return repository.findFirstByServerIdAndSlug(serverId, slug).map { mapper.toDto(it) }
+    }
 }
