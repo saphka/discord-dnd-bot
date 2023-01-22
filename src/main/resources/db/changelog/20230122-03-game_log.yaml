@@ -1,0 +1,54 @@
+databaseChangeLog:
+  - changeSet:
+      id: 20230122-03-game_log
+      author: saphka
+      changes:
+        - createTable:
+            tableName: game_log
+            columns:
+              - column:
+                  name: id
+                  type: long
+                  autoIncrement: true
+                  constraints:
+                    primaryKey: true
+                    nullable: false
+              - column:
+                  name: server_id
+                  type: long
+                  constraints:
+                    nullable: false
+              - column:
+                  name: game_id
+                  type: long
+                  constraints:
+                    nullable: false
+                    referencedTableName: game
+                    referencedColumnNames: id
+                    foreignKeyName: fk_log_game_id
+              - column:
+                  name: character_id
+                  type: long
+                  constraints:
+                    nullable: false
+                    referencedTableName: character
+                    referencedColumnNames: id
+                    foreignKeyName: fk_log_character_id
+              - column:
+                  name: created_at
+                  type: timestamp
+                  constraints:
+                    nullable: false
+              - column:
+                  name: entry_text
+                  type: varchar(1024)
+                  constraints:
+                    nullable: false
+        - createIndex:
+            tableName: game_log
+            indexName: game_log_server_id_game_id_index
+            columns:
+              - column:
+                  name: server_id
+              - column:
+                  name: game_id

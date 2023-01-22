@@ -105,6 +105,53 @@
           "autocomplete": true
         }
       ]
+    },
+    {
+      "name": "log-add",
+      "description": "Add game log entry",
+      "type": 1,
+      "default_member_permissions": "268435456",
+      "options": [
+        {
+          "name": "game-slug",
+          "description": "Game slug",
+          "type": 3,
+          "max_length": 20,
+          "required": true,
+          "autocomplete": true
+        },
+        {
+          "name": "character-slug",
+          "description": "Character slug",
+          "type": 3,
+          "max_length": 20,
+          "required": true,
+          "autocomplete": true
+        },
+        {
+          "name": "text",
+          "description": "Entry text",
+          "type": 3,
+          "max_length": 1024,
+          "required": true
+        }
+      ]
+    },
+    {
+      "name": "log-list",
+      "description": "List game log",
+      "type": 1,
+      "default_member_permissions": "268435456",
+      "options": [
+        {
+          "name": "game-slug",
+          "description": "Game slug",
+          "type": 3,
+          "max_length": 20,
+          "required": true,
+          "autocomplete": true
+        }
+      ]
     }
   ]
 }

@@ -13,7 +13,8 @@ class GameCommandHandler(
     private val messageSource: MessageSource,
     private val service: GameService,
     private val mapper: GameMapper,
-    private val enrollmentCommandHandler: GameEnrollmentCommandHandler
+    private val enrollmentCommandHandler: GameEnrollmentCommandHandler,
+    private val logCommandHandler: GameLogCommandHandler
 ) : CommandHandler {
 
     override fun name(): String {
@@ -27,6 +28,8 @@ class GameCommandHandler(
             "enroll" -> enrollmentCommandHandler.handleEnroll(event)
             "un-enroll" -> enrollmentCommandHandler.handleUnEnroll(event)
             "list-enrolled" -> enrollmentCommandHandler.handleListEnrolled(event)
+            "log-add" -> logCommandHandler.handleLogAdd(event)
+            "log-list" -> logCommandHandler.handleLogList(event)
             else -> Mono.empty()
         }
     }

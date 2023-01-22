@@ -8,3 +8,6 @@ databaseChangeLog:
   - include:
       file: 20230122-02-game_enrollment.yaml
       relativeToChangelogFile: true
+  - include:
+      file: 20230122-03-game_log.yaml
+      relativeToChangelogFile: true
