@@ -1,0 +1,47 @@
+name: Deploy Containers
+on:
+  release:
+    types:
+      - created
+jobs:
+  Build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      - uses: actions/setup-java@v3
+        with:
+          java-version: 17
+          distribution: zulu
+          cache: maven
+      - name: Build with Maven
+        run: mvn -B package
+      - uses: actions/upload-artifact@v3
+        with:
+          name: discord-dnd-bot.jar
+          path: target/discord-dnd-bot.jar
+  Deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      - uses: actions/setup-python@v3
+        with:
+          python-version: 3.10
+      - name: Install dependencies
+        run: |
+            python -m pip install --upgrade pip
+            pip install ansible==2.14.1
+      - name: set ansible config secrets
+        env:
+          ANSIBLE_SSH_KEY: ${{ secrets.ANSIBLE_SSH_KEY }}
+          ANSIBLE_VAULT_KEY: ${{ secrets.ANSIBLE_VAULT_KEY }}
+        run: |
+          mkdir .ssh
+          echo "$ANSIBLE_SSH_KEY" > .ssh/ansible
+          chmod 600 .ssh/ansible
+          echo "$ANSIBLE_VAULT_KEY" > .ansible_vault_key
+          chmod 600 .ansible_vault_key
+      - uses: actions/download-artifact@v3
+        with:
+          name: discord-dnd-bot.jar
+          path: ansible/roles/service/files/
+      - run: ansible-playbook ansible/setup_server.yml -i ansible/inventory/sprintbox.yml --vault-password-file .ansible_vault_key
