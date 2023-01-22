@@ -32,13 +32,29 @@ class CharacterCommandHandler(
 
     private fun handleListAll(event: ChatInputInteractionEvent): Mono<Void> {
         return doHandleList(event, service.getCharacters(event.interaction.guildId
-            .orElseThrow { IllegalArgumentException("command must be called inside server chat") }
+            .orElseThrow {
+                IllegalArgumentException(
+                    messageSource.getMessage(
+                        "error-no-server-id",
+                        null,
+                        LocaleContextHolder.getLocale()
+                    )
+                )
+            }
             .asLong()))
     }
 
     private fun handleList(event: ChatInputInteractionEvent): Mono<Void> {
         return doHandleList(event, service.getUserCharacters(event.interaction.guildId
-            .orElseThrow { IllegalArgumentException("command must be called inside server chat") }
+            .orElseThrow {
+                IllegalArgumentException(
+                    messageSource.getMessage(
+                        "error-no-server-id",
+                        null,
+                        LocaleContextHolder.getLocale()
+                    )
+                )
+            }
             .asLong(),
             event.interaction.user.id.asLong()))
     }
@@ -49,7 +65,14 @@ class CharacterCommandHandler(
         }
             .collectList()
             .flatMap {
-                event.reply().withEmbeds(it).withEphemeral(true).withContent("Registered characters")
+                event.reply().withEmbeds(it).withEphemeral(true)
+                    .withContent(
+                        messageSource.getMessage(
+                            "character-registered",
+                            null,
+                            LocaleContextHolder.getLocale()
+                        )
+                    )
             }
     }
 

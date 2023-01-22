@@ -36,7 +36,15 @@ class GameCommandHandler(
 
     private fun handleList(event: ChatInputInteractionEvent): Mono<Void> {
         return service.getUpcomingGames(event.interaction.guildId
-            .orElseThrow { IllegalArgumentException("command must be called inside server chat") }
+            .orElseThrow {
+                IllegalArgumentException(
+                    messageSource.getMessage(
+                        "error-no-server-id",
+                        null,
+                        LocaleContextHolder.getLocale()
+                    )
+                )
+            }
             .asLong())
             .map {
                 mapper.toEmbed(it)
@@ -44,7 +52,7 @@ class GameCommandHandler(
             .collectList()
             .flatMap {
                 event.reply()
-                    .withContent("Upcoming games")
+                    .withContent(messageSource.getMessage("game-list-header", null, LocaleContextHolder.getLocale()))
                     .withEmbeds(it).withEphemeral(true)
             }
     }
@@ -56,7 +64,7 @@ class GameCommandHandler(
                 .withContent(
                     messageSource.getMessage(
                         "game-announce",
-                        arrayOf(it.name),
+                        arrayOf(it.name, it.startsAt.format(mapper.formatter)),
                         LocaleContextHolder.getLocale()
                     )
                 )

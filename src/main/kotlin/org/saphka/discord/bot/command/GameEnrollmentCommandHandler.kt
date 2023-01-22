@@ -8,6 +8,8 @@ import org.saphka.discord.bot.model.GameEnrollmentDTO
 import org.saphka.discord.bot.service.CharacterService
 import org.saphka.discord.bot.service.GameEnrollmentService
 import org.saphka.discord.bot.service.GameService
+import org.springframework.context.MessageSource
+import org.springframework.context.i18n.LocaleContextHolder
 import org.springframework.stereotype.Component
 import reactor.core.publisher.Mono
 import reactor.util.function.Tuple2
@@ -17,7 +19,8 @@ class GameEnrollmentCommandHandler(
     private val service: GameEnrollmentService,
     private val gameService: GameService,
     private val characterService: CharacterService,
-    private val characterMapper: CharacterMapper
+    private val characterMapper: CharacterMapper,
+    private val messageSource: MessageSource
 ) {
 
     fun handleEnroll(event: ChatInputInteractionEvent): Mono<Void> {
@@ -32,7 +35,8 @@ class GameEnrollmentCommandHandler(
                 )
             }
             .flatMap {
-                event.reply().withEphemeral(true).withContent("Enrolled successfully!")
+                event.reply().withEphemeral(true)
+                    .withContent(messageSource.getMessage("enrolled", null, LocaleContextHolder.getLocale()))
             }
     }
 
@@ -48,7 +52,8 @@ class GameEnrollmentCommandHandler(
                 )
             }
             .flatMap {
-                event.reply().withEphemeral(true).withContent("Un-enrolled successfully!")
+                event.reply().withEphemeral(true)
+                    .withContent(messageSource.getMessage("un-enrolled", null, LocaleContextHolder.getLocale()))
             }
     }
 
@@ -69,7 +74,7 @@ class GameEnrollmentCommandHandler(
                 if (it.size > 0) {
                     reply.withEmbeds(it)
                 } else {
-                    reply.withContent("No one enrolled")
+                    reply.withContent(messageSource.getMessage("no-enrollments", null, LocaleContextHolder.getLocale()))
                 }
 
             }
@@ -87,7 +92,14 @@ class GameEnrollmentCommandHandler(
     }
 
     private fun getServerId(event: ChatInputInteractionEvent): Long {
-        return event.interaction.guildId.orElseThrow { IllegalArgumentException("command must be called inside server chat") }
-            .asLong()
+        return event.interaction.guildId.orElseThrow {
+            IllegalArgumentException(
+                messageSource.getMessage(
+                    "error-no-server-id",
+                    null,
+                    LocaleContextHolder.getLocale()
+                )
+            )
+        }.asLong()
     }
 }

@@ -14,7 +14,7 @@ import java.util.*
 @Component
 class GameMapper {
 
-    private val formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm")
+    val formatter: DateTimeFormatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm")
 
     fun toEntity(it: GameDTO) = Game(
         id = it.id,

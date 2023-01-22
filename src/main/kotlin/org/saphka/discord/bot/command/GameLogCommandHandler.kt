@@ -7,6 +7,8 @@ import org.saphka.discord.bot.model.GameDTO
 import org.saphka.discord.bot.service.CharacterService
 import org.saphka.discord.bot.service.GameLogService
 import org.saphka.discord.bot.service.GameService
+import org.springframework.context.MessageSource
+import org.springframework.context.i18n.LocaleContextHolder
 import org.springframework.stereotype.Component
 import reactor.core.publisher.Flux
 import reactor.core.publisher.Mono
@@ -17,14 +19,18 @@ class GameLogCommandHandler(
     private val service: GameLogService,
     private val mapper: GameLogMapper,
     private val gameService: GameService,
-    private val characterService: CharacterService
+    private val characterService: CharacterService,
+    private val messageSource: MessageSource
 ) {
 
     fun handleLogAdd(event: ChatInputInteractionEvent): Mono<Void> {
         return getGameAndCharacter(event)
             .map { mapper.fromEvent(event, it.t1, it.t2) }
             .flatMap { service.addEntry(it) }
-            .flatMap { event.reply().withEphemeral(true).withContent("Log entry added") }
+            .flatMap {
+                event.reply().withEphemeral(true)
+                    .withContent(messageSource.getMessage("game-log-added", null, LocaleContextHolder.getLocale()))
+            }
     }
 
     fun handleLogList(event: ChatInputInteractionEvent): Mono<Void> {
@@ -47,8 +53,10 @@ class GameLogCommandHandler(
                 }.joinToString("\n")
             }
             .flatMap {
+                val header = messageSource.getMessage("game-log-header", null, LocaleContextHolder.getLocale())
+
                 event.reply().withEphemeral(true)
-                    .withContent("GAME LOG:\n${it}")
+                    .withContent("${header}:\n${it}")
             }
 
 
@@ -66,8 +74,15 @@ class GameLogCommandHandler(
     }
 
     private fun getServerId(event: ChatInputInteractionEvent): Long {
-        return event.interaction.guildId.orElseThrow { IllegalArgumentException("command must be called inside server chat") }
-            .asLong()
+        return event.interaction.guildId.orElseThrow {
+            IllegalArgumentException(
+                messageSource.getMessage(
+                    "error-no-server-id",
+                    null,
+                    LocaleContextHolder.getLocale()
+                )
+            )
+        }.asLong()
     }
 
 }
