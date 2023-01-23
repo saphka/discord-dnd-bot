@@ -1,4 +1,4 @@
-name: Deploy Containers
+name: Deploy Bot
 on:
   release:
     types:
@@ -25,7 +25,7 @@ jobs:
       - uses: actions/checkout@v3
       - uses: actions/setup-python@v3
         with:
-          python-version: 3.10
+          python-version: "3.10"
       - name: Install dependencies
         run: |
             python -m pip install --upgrade pip
