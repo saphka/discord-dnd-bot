@@ -1,44 +1,8 @@
 {
   "name": "game",
   "description": "Games menu",
+  "dm_permission": false,
   "options": [
-    {
-      "name": "create",
-      "description": "Create game",
-      "type": 1,
-      "default_member_permissions": "268435456",
-      "options": [
-        {
-          "name": "slug",
-          "description": "Game slug",
-          "type": 3,
-          "max_length": 20,
-          "required": true
-        },
-        {
-          "name": "name",
-          "description": "Game name",
-          "type": 3,
-          "max_length": 255,
-          "required": true
-        },
-        {
-          "name": "date",
-          "description": "Game date YYYY-MM-DD HH:MM",
-          "type": 3,
-          "min_length": 16,
-          "max_length": 16,
-          "required": true
-        },
-        {
-          "name": "tier",
-          "description": "Game tier",
-          "type": 3,
-          "max_length": 20,
-          "required": true
-        }
-      ]
-    },
     {
       "name": "list",
       "description": "List upcoming games",
@@ -83,69 +47,6 @@
         {
           "name": "character-slug",
           "description": "Character slug",
-          "type": 3,
-          "max_length": 20,
-          "required": true,
-          "autocomplete": true
-        }
-      ]
-    },
-    {
-      "name": "list-enrolled",
-      "description": "List enrolled characters",
-      "type": 1,
-      "default_member_permissions": "268435456",
-      "options": [
-        {
-          "name": "game-slug",
-          "description": "Game slug",
-          "type": 3,
-          "max_length": 20,
-          "required": true,
-          "autocomplete": true
-        }
-      ]
-    },
-    {
-      "name": "log-add",
-      "description": "Add game log entry",
-      "type": 1,
-      "default_member_permissions": "268435456",
-      "options": [
-        {
-          "name": "game-slug",
-          "description": "Game slug",
-          "type": 3,
-          "max_length": 20,
-          "required": true,
-          "autocomplete": true
-        },
-        {
-          "name": "character-slug",
-          "description": "Character slug",
-          "type": 3,
-          "max_length": 20,
-          "required": true,
-          "autocomplete": true
-        },
-        {
-          "name": "text",
-          "description": "Entry text",
-          "type": 3,
-          "max_length": 1024,
-          "required": true
-        }
-      ]
-    },
-    {
-      "name": "log-list",
-      "description": "List game log",
-      "type": 1,
-      "default_member_permissions": "268435456",
-      "options": [
-        {
-          "name": "game-slug",
-          "description": "Game slug",
           "type": 3,
           "max_length": 20,
           "required": true,

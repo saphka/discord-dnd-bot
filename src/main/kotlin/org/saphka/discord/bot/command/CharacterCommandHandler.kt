@@ -18,19 +18,18 @@ class CharacterCommandHandler(
 ) : CommandHandler {
 
     override fun name(): String {
-        return "character"
+        return CommandName.CHARACTER_COMMAND
     }
 
     override fun handle(event: ChatInputInteractionEvent): Mono<Void> {
         return when (event.options.first().name) {
-            "create" -> handleCreate(event)
-            "list" -> handleList(event)
-            "list-all" -> handleListAll(event)
+            CommandName.CHARACTER_CREATE -> handleCreate(event)
+            CommandName.CHARACTER_LIST -> handleList(event)
             else -> Mono.empty()
         }
     }
 
-    private fun handleListAll(event: ChatInputInteractionEvent): Mono<Void> {
+    fun handleListAll(event: ChatInputInteractionEvent): Mono<Void> {
         return doHandleList(event, service.getCharacters(event.interaction.guildId
             .orElseThrow {
                 IllegalArgumentException(
