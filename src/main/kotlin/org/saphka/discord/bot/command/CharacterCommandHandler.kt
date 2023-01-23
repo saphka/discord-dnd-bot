@@ -29,50 +29,50 @@ class CharacterCommandHandler(
 
     fun handleListAll(event: ChatInputInteractionEvent): Mono<Void> {
         return doHandleList(event, service.getCharacters(event.interaction.guildId.orElseThrow {
-                IllegalArgumentException(
-                    messageSource.getMessage(
-                        "error-no-server-id", null, Locale.forLanguageTag(event.interaction.userLocale)
-                    )
+            IllegalArgumentException(
+                messageSource.getMessage(
+                    "error-no-server-id", null, Locale.forLanguageTag(event.interaction.userLocale)
                 )
-            }.asLong()))
+            )
+        }.asLong()))
     }
 
     private fun handleList(event: ChatInputInteractionEvent): Mono<Void> {
         return doHandleList(event, service.getUserCharacters(event.interaction.guildId.orElseThrow {
-                IllegalArgumentException(
-                    messageSource.getMessage(
-                        "error-no-server-id", null, Locale.forLanguageTag(
-                            event.interaction.userLocale
-                        )
+            IllegalArgumentException(
+                messageSource.getMessage(
+                    "error-no-server-id", null, Locale.forLanguageTag(
+                        event.interaction.userLocale
                     )
                 )
-            }.asLong(), event.interaction.user.id.asLong()))
+            )
+        }.asLong(), event.interaction.user.id.asLong()))
     }
 
     private fun doHandleList(event: ChatInputInteractionEvent, characters: Flux<CharacterDTO>): Mono<Void> {
         return characters.map {
-            mapper.toEmbed(it)
+            mapper.toEmbed(it, Locale.forLanguageTag(event.interaction.userLocale))
         }.collectList().flatMap {
-                event.reply().withEmbeds(it).withEphemeral(true).withContent(
-                        messageSource.getMessage(
-                            "character-registered", null, Locale.forLanguageTag(
-                                event.interaction.userLocale
-                            )
-                        )
+            event.reply().withEmbeds(it).withEphemeral(true).withContent(
+                messageSource.getMessage(
+                    "character-registered", null, Locale.forLanguageTag(
+                        event.interaction.userLocale
                     )
-            }
+                )
+            )
+        }
     }
 
     private fun handleCreate(event: ChatInputInteractionEvent): Mono<Void> {
         val character = mapper.fromEvent(event)
         return service.create(character).flatMap {
             event.reply().withEphemeral(true).withContent(
-                    messageSource.getMessage(
-                        "character-created", arrayOf(it.name), Locale.forLanguageTag(
-                            event.interaction.userLocale
-                        )
+                messageSource.getMessage(
+                    "character-created", arrayOf(it.name), Locale.forLanguageTag(
+                        event.interaction.userLocale
                     )
                 )
+            )
         }
     }
 }

@@ -62,8 +62,9 @@ class GameEnrollmentCommandHandler(
                 .orElse("")
         return gameService.getBySlug(serverId, gameSlug).flatMapMany {
             service.getEnrolled(serverId, it.id!!)
-        }.map { it.characterId }.transform { characterService.getByIds(it) }.map { characterMapper.toEmbed(it) }
-            .collectList().flatMap {
+        }.map { it.characterId }.transform { characterService.getByIds(it) }
+            .map { characterMapper.toEmbed(it, Locale.forLanguageTag(event.interaction.userLocale)) }.collectList()
+            .flatMap {
                 val reply = event.reply().withEphemeral(true)
                 if (it.size > 0) {
                     reply.withEmbeds(it)

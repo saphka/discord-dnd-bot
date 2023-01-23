@@ -1,17 +1,26 @@
 {
   "name": "admin",
   "description": "Admin menu",
+  "description_localizations": {
+    "ru": "Меню администратора"
+  },
   "default_member_permissions": "268435456",
   "dm_permission": false,
   "options": [
     {
       "name": "create-game",
       "description": "Create game",
+      "description_localizations": {
+        "ru": "Создать игру"
+      },
       "type": 1,
       "options": [
         {
           "name": "slug",
           "description": "Game slug",
+          "description_localizations": {
+            "ru": "Код игры"
+          },
           "type": 3,
           "max_length": 20,
           "required": true
@@ -19,13 +28,19 @@
         {
           "name": "name",
           "description": "Game name",
+          "description_localizations": {
+            "ru": "Название игры"
+          },
           "type": 3,
           "max_length": 255,
           "required": true
         },
         {
           "name": "date",
-          "description": "Game date YYYY-MM-DD HH:MM",
+          "description": "Game date YYYY-MM-DD hh:mm",
+          "description_localizations": {
+            "ru": "Дата в формате ГГГГ-ММ-ДД чч:мм"
+          },
           "type": 3,
           "min_length": 16,
           "max_length": 16,
@@ -34,6 +49,9 @@
         {
           "name": "tier",
           "description": "Game tier",
+          "description_localizations": {
+            "ru": "Сложность игры"
+          },
           "type": 3,
           "max_length": 20,
           "required": true
@@ -43,16 +61,25 @@
     {
       "name": "list-all-characters",
       "description": "List all characters",
+      "description_localizations": {
+        "ru": "Показать всех персонажей"
+      },
       "type": 1
     },
     {
       "name": "list-enrolled",
       "description": "List enrolled characters",
+      "description_localizations": {
+        "ru": "Показать зарегистрировавшихся на игру персонажей"
+      },
       "type": 1,
       "options": [
         {
           "name": "game-slug",
           "description": "Game slug",
+          "description_localizations": {
+            "ru": "Код игры"
+          },
           "type": 3,
           "max_length": 20,
           "required": true,
@@ -63,11 +90,17 @@
     {
       "name": "log-add",
       "description": "Add game log entry",
+      "description_localizations": {
+        "ru": "Добавить запись в журнал игры"
+      },
       "type": 1,
       "options": [
         {
           "name": "game-slug",
           "description": "Game slug",
+          "description_localizations": {
+            "ru": "Код игры"
+          },
           "type": 3,
           "max_length": 20,
           "required": true,
@@ -76,6 +109,9 @@
         {
           "name": "character-slug",
           "description": "Character slug",
+          "description_localizations": {
+            "ru": "Код персонажа"
+          },
           "type": 3,
           "max_length": 20,
           "required": true,
@@ -84,6 +120,9 @@
         {
           "name": "text",
           "description": "Entry text",
+          "description_localizations": {
+            "ru": "Текст записи"
+          },
           "type": 3,
           "max_length": 1024,
           "required": true
@@ -93,11 +132,17 @@
     {
       "name": "log-list",
       "description": "List game log",
+      "description_localizations": {
+        "ru": "Показать журнал игры"
+      },
       "type": 1,
       "options": [
         {
           "name": "game-slug",
           "description": "Game slug",
+          "description_localizations": {
+            "ru": "Код игры"
+          },
           "type": 3,
           "max_length": 20,
           "required": true,

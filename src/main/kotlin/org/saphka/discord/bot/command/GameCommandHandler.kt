@@ -33,30 +33,30 @@ class GameCommandHandler(
         val game = mapper.fromEvent(event)
         return service.create(game).flatMap {
             event.reply().withContent(
-                    messageSource.getMessage(
-                        "game-announce",
-                        arrayOf(it.name, it.startsAt.format(mapper.formatter)),
-                        Locale.forLanguageTag(event.interaction.userLocale)
-                    )
+                messageSource.getMessage(
+                    "game-announce",
+                    arrayOf(it.name, it.startsAt.format(mapper.formatter)),
+                    Locale.forLanguageTag(event.interaction.userLocale)
                 )
+            )
         }
     }
 
     private fun handleList(event: ChatInputInteractionEvent): Mono<Void> {
         return service.getUpcomingGames(event.interaction.guildId.orElseThrow {
-                IllegalArgumentException(
-                    messageSource.getMessage(
-                        "error-no-server-id", null, Locale.forLanguageTag(event.interaction.userLocale)
-                    )
+            IllegalArgumentException(
+                messageSource.getMessage(
+                    "error-no-server-id", null, Locale.forLanguageTag(event.interaction.userLocale)
                 )
-            }.asLong()).map {
-                mapper.toEmbed(it)
-            }.collectList().flatMap {
-                event.reply().withContent(
-                        messageSource.getMessage(
-                            "game-list-header", null, Locale.forLanguageTag(event.interaction.userLocale)
-                        )
-                    ).withEmbeds(it).withEphemeral(true)
-            }
+            )
+        }.asLong()).map {
+            mapper.toEmbed(it, Locale.forLanguageTag(event.interaction.userLocale))
+        }.collectList().flatMap {
+            event.reply().withContent(
+                messageSource.getMessage(
+                    "game-list-header", null, Locale.forLanguageTag(event.interaction.userLocale)
+                )
+            ).withEmbeds(it).withEphemeral(true)
+        }
     }
 }

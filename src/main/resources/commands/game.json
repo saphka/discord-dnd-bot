@@ -1,21 +1,33 @@
 {
   "name": "game",
   "description": "Games menu",
+  "description_localizations": {
+    "ru": "Меню игр"
+  },
   "dm_permission": false,
   "options": [
     {
       "name": "list",
       "description": "List upcoming games",
+      "description_localizations": {
+        "ru": "Показать предстоящие игры"
+      },
       "type": 1
     },
     {
       "name": "enroll",
       "description": "Enroll for a game",
+      "description_localizations": {
+        "ru": "Зарегистрироваться на игру"
+      },
       "type": 1,
       "options": [
         {
           "name": "game-slug",
           "description": "Game slug",
+          "description_localizations": {
+            "ru": "Код игры"
+          },
           "type": 3,
           "max_length": 20,
           "required": true,
@@ -24,6 +36,9 @@
         {
           "name": "character-slug",
           "description": "Character slug",
+          "description_localizations": {
+            "ru": "Код персонажа"
+          },
           "type": 3,
           "max_length": 20,
           "required": true,
@@ -34,11 +49,17 @@
     {
       "name": "un-enroll",
       "description": "Un-enroll for a game",
+      "description_localizations": {
+        "ru": "Отменить регистрацию"
+      },
       "type": 1,
       "options": [
         {
           "name": "game-slug",
           "description": "Game slug",
+          "description_localizations": {
+            "ru": "Код игры"
+          },
           "type": 3,
           "max_length": 20,
           "required": true,
@@ -47,6 +68,9 @@
         {
           "name": "character-slug",
           "description": "Character slug",
+          "description_localizations": {
+            "ru": "Код персонажа"
+          },
           "type": 3,
           "max_length": 20,
           "required": true,
