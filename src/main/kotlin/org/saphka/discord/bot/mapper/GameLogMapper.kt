@@ -1,6 +1,7 @@
 package org.saphka.discord.bot.mapper
 
 import discord4j.core.event.domain.interaction.ChatInputInteractionEvent
+import org.saphka.discord.bot.command.FieldName
 import org.saphka.discord.bot.domain.GameLog
 import org.saphka.discord.bot.model.CharacterDTO
 import org.saphka.discord.bot.model.GameDTO
@@ -42,7 +43,7 @@ class GameLogMapper {
             gameId = game.id!!,
             characterId = character.id!!,
             createdAt = LocalDateTime.now(),
-            entryText = options.getOption("text").flatMap { it.value }.map { it.asString() }.orElse("")
+            entryText = options.getOption(FieldName.GAME_LOG_TEXT).flatMap { it.value }.map { it.asString() }.orElse("")
         )
     }
 

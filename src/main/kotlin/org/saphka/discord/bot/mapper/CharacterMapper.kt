@@ -2,6 +2,7 @@ package org.saphka.discord.bot.mapper
 
 import discord4j.core.event.domain.interaction.ChatInputInteractionEvent
 import discord4j.core.spec.EmbedCreateSpec
+import org.saphka.discord.bot.command.FieldName
 import org.saphka.discord.bot.domain.Character
 import org.saphka.discord.bot.model.CharacterDTO
 import org.springframework.stereotype.Component
@@ -42,10 +43,12 @@ class CharacterMapper {
         return CharacterDTO(
             serverId = event.interaction.guildId.orElseThrow().asLong(),
             ownerId = event.interaction.user.id.asLong(),
-            slug = options.getOption("slug").flatMap { it.value }.map { it.asString() }.orElse(""),
-            name = options.getOption("name").flatMap { it.value }.map { it.asString() }.orElse(""),
-            sheet = options.getOption("sheet").flatMap { it.value }.map { it.asString() }.orElse(""),
-            avatar = options.getOption("avatar").flatMap { it.value }.map { it.asString() }.orElse(""),
+            slug = options.getOption(FieldName.CHARACTER_SLUG).flatMap { it.value }.map { it.asString() }.orElse(""),
+            name = options.getOption(FieldName.CHARACTER_NAME).flatMap { it.value }.map { it.asString() }.orElse(""),
+            sheet = options.getOption(FieldName.CHARACTER_SHEET_URL).flatMap { it.value }.map { it.asString() }
+                .orElse(""),
+            avatar = options.getOption(FieldName.CHARACTER_AVATAR_URL).flatMap { it.value }.map { it.asString() }
+                .orElse(""),
         )
     }
 

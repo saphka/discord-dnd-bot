@@ -13,24 +13,33 @@ class GameCommandHandler(
     private val messageSource: MessageSource,
     private val service: GameService,
     private val mapper: GameMapper,
-    private val enrollmentCommandHandler: GameEnrollmentCommandHandler,
-    private val logCommandHandler: GameLogCommandHandler
+    private val enrollmentCommandHandler: GameEnrollmentCommandHandler
 ) : CommandHandler {
 
     override fun name(): String {
-        return "game"
+        return CommandName.GAME_COMMAND
     }
 
     override fun handle(event: ChatInputInteractionEvent): Mono<Void> {
         return when (event.options.first().name) {
-            "create" -> handleCreate(event)
-            "list" -> handleList(event)
-            "enroll" -> enrollmentCommandHandler.handleEnroll(event)
-            "un-enroll" -> enrollmentCommandHandler.handleUnEnroll(event)
-            "list-enrolled" -> enrollmentCommandHandler.handleListEnrolled(event)
-            "log-add" -> logCommandHandler.handleLogAdd(event)
-            "log-list" -> logCommandHandler.handleLogList(event)
+            CommandName.GAME_LIST -> handleList(event)
+            CommandName.GAME_ENROLL -> enrollmentCommandHandler.handleEnroll(event)
+            CommandName.GAME_UN_ENROLL -> enrollmentCommandHandler.handleUnEnroll(event)
             else -> Mono.empty()
+        }
+    }
+
+    fun handleCreate(event: ChatInputInteractionEvent): Mono<Void> {
+        val game = mapper.fromEvent(event)
+        return service.create(game).flatMap {
+            event.reply()
+                .withContent(
+                    messageSource.getMessage(
+                        "game-announce",
+                        arrayOf(it.name, it.startsAt.format(mapper.formatter)),
+                        LocaleContextHolder.getLocale()
+                    )
+                )
         }
     }
 
@@ -55,19 +64,5 @@ class GameCommandHandler(
                     .withContent(messageSource.getMessage("game-list-header", null, LocaleContextHolder.getLocale()))
                     .withEmbeds(it).withEphemeral(true)
             }
-    }
-
-    private fun handleCreate(event: ChatInputInteractionEvent): Mono<Void> {
-        val game = mapper.fromEvent(event)
-        return service.create(game).flatMap {
-            event.reply()
-                .withContent(
-                    messageSource.getMessage(
-                        "game-announce",
-                        arrayOf(it.name, it.startsAt.format(mapper.formatter)),
-                        LocaleContextHolder.getLocale()
-                    )
-                )
-        }
     }
 }

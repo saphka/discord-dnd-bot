@@ -1,6 +1,7 @@
 {
   "name": "character",
   "description": "Characters menu",
+  "dm_permission": false,
   "options": [
     {
       "name": "create",
@@ -40,12 +41,6 @@
     {
       "name": "list",
       "description": "List your characters",
-      "type": 1
-    },
-    {
-      "name": "list-all",
-      "description": "List all characters",
-      "default_member_permissions": "268435456",
       "type": 1
     }
   ]
