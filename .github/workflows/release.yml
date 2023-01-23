@@ -39,6 +39,7 @@ jobs:
           mkdir .ssh
           echo "$ANSIBLE_SSH_KEY" > .ssh/ansible
           chmod 600 .ssh/ansible
+          ssh-keyscan -H 185.185.68.174 > .ssh/known_hosts
           echo "$ANSIBLE_VAULT_KEY" > .ansible_vault_key
           chmod 600 .ansible_vault_key
       - uses: actions/download-artifact@v3
