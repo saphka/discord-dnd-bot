@@ -5,11 +5,14 @@ import discord4j.core.spec.EmbedCreateSpec
 import org.saphka.discord.bot.command.FieldName
 import org.saphka.discord.bot.domain.Character
 import org.saphka.discord.bot.model.CharacterDTO
+import org.springframework.context.MessageSource
 import org.springframework.stereotype.Component
 import java.util.*
 
 @Component
-class CharacterMapper {
+class CharacterMapper(
+    private val messageSource: MessageSource
+) {
 
     fun toDto(it: Character) = CharacterDTO(
         id = it.id,
@@ -31,11 +34,11 @@ class CharacterMapper {
         avatar = it.avatar
     )
 
-    fun toEmbed(it: CharacterDTO) = EmbedCreateSpec.builder()
+    fun toEmbed(it: CharacterDTO, locale: Locale) = EmbedCreateSpec.builder()
         .title(it.name)
         .url(it.sheet)
         .image(it.avatar)
-        .addField("Slug", it.slug, true)
+        .addField(messageSource.getMessage(FieldName.CHARACTER_SLUG, null, locale), it.slug, true)
         .build()
 
     fun fromEvent(event: ChatInputInteractionEvent): CharacterDTO {
@@ -43,7 +46,8 @@ class CharacterMapper {
         return CharacterDTO(
             serverId = event.interaction.guildId.orElseThrow().asLong(),
             ownerId = event.interaction.user.id.asLong(),
-            slug = options.getOption(FieldName.CHARACTER_SLUG).flatMap { it.value }.map { it.asString() }.orElse(""),
+            slug = options.getOption(FieldName.CHARACTER_SLUG).flatMap { it.value }.map { it.asString() }
+                .orElse(""),
             name = options.getOption(FieldName.CHARACTER_NAME).flatMap { it.value }.map { it.asString() }.orElse(""),
             sheet = options.getOption(FieldName.CHARACTER_SHEET_URL).flatMap { it.value }.map { it.asString() }
                 .orElse(""),

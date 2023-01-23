@@ -5,6 +5,7 @@ import discord4j.core.spec.EmbedCreateSpec
 import org.saphka.discord.bot.command.FieldName
 import org.saphka.discord.bot.domain.Game
 import org.saphka.discord.bot.model.GameDTO
+import org.springframework.context.MessageSource
 import org.springframework.stereotype.Component
 import java.time.LocalDateTime
 import java.time.ZoneOffset
@@ -13,7 +14,9 @@ import java.time.temporal.ChronoUnit
 import java.util.*
 
 @Component
-class GameMapper {
+class GameMapper(
+    private val messageSource: MessageSource
+) {
 
     val formatter: DateTimeFormatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm")
 
@@ -35,12 +38,12 @@ class GameMapper {
         tier = it.tier
     )
 
-    fun toEmbed(it: GameDTO) = EmbedCreateSpec.builder()
+    fun toEmbed(it: GameDTO, locale: Locale) = EmbedCreateSpec.builder()
         .title(it.name)
         .timestamp(it.startsAt.toInstant(ZoneOffset.UTC))
-        .addField("Slug", it.slug, true)
-        .addField("Tier", it.tier, true)
-        .addField("Time", it.startsAt.toLocalTime().toString(), true)
+        .addField(messageSource.getMessage(FieldName.GAME_SLUG, null, locale), it.slug, true)
+        .addField(messageSource.getMessage(FieldName.GAME_TIER, null, locale), it.tier, true)
+        .addField(messageSource.getMessage(FieldName.GAME_TIME, null, locale), it.startsAt.toLocalTime().toString(), true)
         .build()
 
     fun fromEvent(event: ChatInputInteractionEvent): GameDTO {

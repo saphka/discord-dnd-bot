@@ -8,11 +8,11 @@ import org.saphka.discord.bot.service.CharacterService
 import org.saphka.discord.bot.service.GameLogService
 import org.saphka.discord.bot.service.GameService
 import org.springframework.context.MessageSource
-import org.springframework.context.i18n.LocaleContextHolder
 import org.springframework.stereotype.Component
 import reactor.core.publisher.Flux
 import reactor.core.publisher.Mono
 import reactor.util.function.Tuple2
+import java.util.*
 
 @Component
 class GameLogCommandHandler(
@@ -24,12 +24,13 @@ class GameLogCommandHandler(
 ) {
 
     fun handleLogAdd(event: ChatInputInteractionEvent): Mono<Void> {
-        return getGameAndCharacter(event)
-            .map { mapper.fromEvent(event, it.t1, it.t2) }
-            .flatMap { service.addEntry(it) }
+        return getGameAndCharacter(event).map { mapper.fromEvent(event, it.t1, it.t2) }.flatMap { service.addEntry(it) }
             .flatMap {
-                event.reply().withEphemeral(true)
-                    .withContent(messageSource.getMessage("game-log-added", null, LocaleContextHolder.getLocale()))
+                event.reply().withEphemeral(true).withContent(
+                    messageSource.getMessage(
+                        "game-log-added", null, Locale.forLanguageTag(event.interaction.userLocale)
+                    )
+                )
             }
     }
 
@@ -39,25 +40,21 @@ class GameLogCommandHandler(
             event.options.first().getOption(FieldName.GAME_SLUG_REF).flatMap { it.value }.map { it.asString() }
                 .orElse("")
 
-        return gameService.getBySlug(serverId, gameSlug)
-            .flatMapMany { service.getEntries(serverId, it.id!!) }
-            .collectList()
-            .zipWhen { log ->
-                characterService.getByIds(
-                    Flux.fromIterable((log)
-                        .map { it.characterId }
-                    )).collectMap { it.id!! }
-            }
-            .map {
+        return gameService.getBySlug(serverId, gameSlug).flatMapMany { service.getEntries(serverId, it.id!!) }
+            .collectList().zipWhen { log ->
+                characterService.getByIds(Flux.fromIterable((log).map { it.characterId })).collectMap { it.id!! }
+            }.map {
                 it.t1.map { log ->
                     mapper.toMessage(log, it.t2[log.characterId])
                 }.joinToString("\n")
-            }
-            .flatMap {
-                val header = messageSource.getMessage("game-log-header", null, LocaleContextHolder.getLocale())
+            }.flatMap {
+                val header = messageSource.getMessage(
+                    "game-log-header",
+                    null,
+                    Locale.forLanguageTag(event.interaction.userLocale)
+                )
 
-                event.reply().withEphemeral(true)
-                    .withContent("${header}:\n${it}")
+                event.reply().withEphemeral(true).withContent("${header}:\n${it}")
             }
 
 
@@ -79,9 +76,7 @@ class GameLogCommandHandler(
         return event.interaction.guildId.orElseThrow {
             IllegalArgumentException(
                 messageSource.getMessage(
-                    "error-no-server-id",
-                    null,
-                    LocaleContextHolder.getLocale()
+                    "error-no-server-id", null, Locale.forLanguageTag(event.interaction.userLocale)
                 )
             )
         }.asLong()

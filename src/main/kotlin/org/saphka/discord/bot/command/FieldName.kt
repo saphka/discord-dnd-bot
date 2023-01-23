@@ -12,6 +12,7 @@ sealed class FieldName {
         const val GAME_NAME = "name"
         const val GAME_DATE = "date"
         const val GAME_TIER = "tier"
+        const val GAME_TIME = "time"
         const val GAME_SLUG_REF = "game-slug"
 
         const val GAME_LOG_TEXT = "text"
