@@ -60,7 +60,8 @@ class GameEnrollmentCommandHandler(
     fun handleListEnrolled(event: ChatInputInteractionEvent): Mono<Void> {
         val serverId = getServerId(event)
         val gameSlug =
-            event.options.first().getOption("game-slug").flatMap { it.value }.map { it.asString() }.orElse("")
+            event.options.first().getOption(FieldName.GAME_SLUG_REF).flatMap { it.value }.map { it.asString() }
+                .orElse("")
         return gameService.getBySlug(serverId, gameSlug)
             .flatMapMany {
                 service.getEnrolled(serverId, it.id!!)
@@ -82,8 +83,9 @@ class GameEnrollmentCommandHandler(
 
     private fun getGameAndCharacter(event: ChatInputInteractionEvent): Mono<Tuple2<GameDTO, CharacterDTO>> {
         val options = event.options.first()
-        val gameSlug = options.getOption("game-slug").flatMap { it.value }.map { it.asString() }.orElse("")
-        val characterSlug = options.getOption("character-slug").flatMap { it.value }.map { it.asString() }.orElse("")
+        val gameSlug = options.getOption(FieldName.GAME_SLUG_REF).flatMap { it.value }.map { it.asString() }.orElse("")
+        val characterSlug =
+            options.getOption(FieldName.CHARACTER_SLUG_REF).flatMap { it.value }.map { it.asString() }.orElse("")
         val serverId = getServerId(event)
 
         return Mono.zip(

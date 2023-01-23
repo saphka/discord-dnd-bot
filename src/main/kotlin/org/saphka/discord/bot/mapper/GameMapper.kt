@@ -2,6 +2,7 @@ package org.saphka.discord.bot.mapper
 
 import discord4j.core.event.domain.interaction.ChatInputInteractionEvent
 import discord4j.core.spec.EmbedCreateSpec
+import org.saphka.discord.bot.command.FieldName
 import org.saphka.discord.bot.domain.Game
 import org.saphka.discord.bot.model.GameDTO
 import org.springframework.stereotype.Component
@@ -46,12 +47,12 @@ class GameMapper {
         val options = event.options.first()
         return GameDTO(
             serverId = event.interaction.guildId.orElseThrow().asLong(),
-            slug = options.getOption("slug").flatMap { it.value }.map { it.asString() }.orElse(""),
-            name = options.getOption("name").flatMap { it.value }.map { it.asString() }.orElse(""),
-            startsAt = options.getOption("date").flatMap { it.value }.map { it.asString() }
+            slug = options.getOption(FieldName.GAME_SLUG).flatMap { it.value }.map { it.asString() }.orElse(""),
+            name = options.getOption(FieldName.GAME_NAME).flatMap { it.value }.map { it.asString() }.orElse(""),
+            startsAt = options.getOption(FieldName.GAME_DATE).flatMap { it.value }.map { it.asString() }
                 .map { LocalDateTime.parse(it, formatter) }
                 .orElse(LocalDateTime.now().truncatedTo(ChronoUnit.HOURS).plusHours(1)),
-            tier = options.getOption("tier").flatMap { it.value }.map { it.asString() }.orElse(""),
+            tier = options.getOption(FieldName.GAME_TIER).flatMap { it.value }.map { it.asString() }.orElse(""),
         )
     }
 
