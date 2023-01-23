@@ -20,6 +20,7 @@ jobs:
           name: discord-dnd-bot.jar
           path: target/discord-dnd-bot.jar
   Deploy:
+    needs: Build
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v3
