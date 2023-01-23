@@ -38,7 +38,7 @@ Predefined link to add bot to your server -
 
 Creates a game with slug, name, date and tier.
 
-Available to users with MANAGE_ROLES permission (e.g. DMs)
+_Available to users with MANAGE_ROLES permission (e.g. DMs)_
 
 #### `list`
 
@@ -56,7 +56,19 @@ Un-enroll for a game
 
 List enrolled characters.
 
-Available to users with MANAGE_ROLES permission (e.g. DMs)
+_Available to users with MANAGE_ROLES permission (e.g. DMs)_
+
+#### `log-add`
+
+Add entry to game log.
+
+_Available to users with MANAGE_ROLES permission (e.g. DMs)_
+
+#### `log-list`
+
+Get game log by slug
+
+_Available to users with MANAGE_ROLES permission (e.g. DMs)_
 
 ### `character`
 
@@ -72,4 +84,4 @@ List user's characters
 
 List all players at this server.
 
-Available to users with MANAGE_ROLES permission (e.g. DMs)
+_Available to users with MANAGE_ROLES permission (e.g. DMs)_

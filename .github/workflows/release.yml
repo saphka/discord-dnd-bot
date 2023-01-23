@@ -14,7 +14,7 @@ jobs:
           distribution: zulu
           cache: maven
       - name: Build with Maven
-        run: mvn -B package
+        run: mvn -B -Drevision=${GITHUB_REF##*/} package
       - uses: actions/upload-artifact@v3
         with:
           name: discord-dnd-bot.jar
