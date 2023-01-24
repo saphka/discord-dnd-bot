@@ -3,6 +3,7 @@ package org.saphka.discord.bot.listener
 import discord4j.core.event.ReactiveEventAdapter
 import discord4j.core.event.domain.interaction.ChatInputAutoCompleteEvent
 import discord4j.core.event.domain.interaction.ChatInputInteractionEvent
+import discord4j.discordjson.json.ApplicationCommandOptionChoiceData
 import org.reactivestreams.Publisher
 import org.saphka.discord.bot.autocomplete.AutocompleteHandler
 import org.saphka.discord.bot.command.CommandHandler
@@ -33,6 +34,18 @@ class ApplicationCommandListener constructor(
     }
 
     override fun onChatInputAutoCompleteInteraction(event: ChatInputAutoCompleteEvent): Publisher<*> {
-        return autocompleteHandlerMap[event.focusedOption.name]?.handle(event) ?: Mono.empty<Void>()
+        val handler = autocompleteHandlerMap[event.focusedOption.name] ?: return Mono.empty<Void>()
+
+        return handler.handle(event)
+            .map {
+                ApplicationCommandOptionChoiceData.builder()
+                    .name(it.t1)
+                    .value(it.t2)
+                    .build()
+            }
+            .collectList()
+            .flatMap {
+                event.respondWithSuggestions(it)
+            }
     }
 }

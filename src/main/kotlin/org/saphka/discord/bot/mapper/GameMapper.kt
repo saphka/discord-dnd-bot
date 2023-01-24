@@ -15,7 +15,8 @@ import java.util.*
 
 @Component
 class GameMapper(
-    private val messageSource: MessageSource
+    private val messageSource: MessageSource,
+    private val eventPropertiesMapper: EventPropertiesMapper
 ) {
 
     val formatter: DateTimeFormatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm")
@@ -43,13 +44,17 @@ class GameMapper(
         .timestamp(it.startsAt.toInstant(ZoneOffset.UTC))
         .addField(messageSource.getMessage(FieldName.GAME_SLUG, null, locale), it.slug, true)
         .addField(messageSource.getMessage(FieldName.GAME_TIER, null, locale), it.tier, true)
-        .addField(messageSource.getMessage(FieldName.GAME_TIME, null, locale), it.startsAt.toLocalTime().toString(), true)
+        .addField(
+            messageSource.getMessage(FieldName.GAME_TIME, null, locale),
+            it.startsAt.toLocalTime().toString(),
+            true
+        )
         .build()
 
     fun fromEvent(event: ChatInputInteractionEvent): GameDTO {
         val options = event.options.first()
         return GameDTO(
-            serverId = event.interaction.guildId.orElseThrow().asLong(),
+            serverId = eventPropertiesMapper.getServerId(event),
             slug = options.getOption(FieldName.GAME_SLUG).flatMap { it.value }.map { it.asString() }.orElse(""),
             name = options.getOption(FieldName.GAME_NAME).flatMap { it.value }.map { it.asString() }.orElse(""),
             startsAt = options.getOption(FieldName.GAME_DATE).flatMap { it.value }.map { it.asString() }

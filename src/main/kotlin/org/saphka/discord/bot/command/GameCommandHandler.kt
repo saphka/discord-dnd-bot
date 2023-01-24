@@ -1,18 +1,19 @@
 package org.saphka.discord.bot.command
 
 import discord4j.core.event.domain.interaction.ChatInputInteractionEvent
+import org.saphka.discord.bot.mapper.EventPropertiesMapper
 import org.saphka.discord.bot.mapper.GameMapper
 import org.saphka.discord.bot.service.GameService
 import org.springframework.context.MessageSource
 import org.springframework.stereotype.Component
 import reactor.core.publisher.Mono
-import java.util.*
 
 @Component
 class GameCommandHandler(
     private val messageSource: MessageSource,
     private val service: GameService,
     private val mapper: GameMapper,
+    private val eventPropertiesMapper: EventPropertiesMapper,
     private val enrollmentCommandHandler: GameEnrollmentCommandHandler
 ) : CommandHandler {
 
@@ -36,26 +37,18 @@ class GameCommandHandler(
                 messageSource.getMessage(
                     "game-announce",
                     arrayOf(it.name, it.startsAt.format(mapper.formatter)),
-                    Locale.forLanguageTag(event.interaction.userLocale)
+                    eventPropertiesMapper.getLocale(event)
                 )
             )
         }
     }
 
     private fun handleList(event: ChatInputInteractionEvent): Mono<Void> {
-        return service.getUpcomingGames(event.interaction.guildId.orElseThrow {
-            IllegalArgumentException(
-                messageSource.getMessage(
-                    "error-no-server-id", null, Locale.forLanguageTag(event.interaction.userLocale)
-                )
-            )
-        }.asLong()).map {
-            mapper.toEmbed(it, Locale.forLanguageTag(event.interaction.userLocale))
+        return service.getUpcomingGames(eventPropertiesMapper.getServerId(event)).map {
+            mapper.toEmbed(it, eventPropertiesMapper.getLocale(event))
         }.collectList().flatMap {
             event.reply().withContent(
-                messageSource.getMessage(
-                    "game-list-header", null, Locale.forLanguageTag(event.interaction.userLocale)
-                )
+                messageSource.getMessage("game-list-header", null, eventPropertiesMapper.getLocale(event))
             ).withEmbeds(it).withEphemeral(true)
         }
     }

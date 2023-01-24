@@ -2,17 +2,20 @@ package org.saphka.discord.bot.command
 
 import discord4j.core.event.domain.interaction.ChatInputInteractionEvent
 import org.saphka.discord.bot.mapper.CharacterMapper
+import org.saphka.discord.bot.mapper.EventPropertiesMapper
 import org.saphka.discord.bot.model.CharacterDTO
 import org.saphka.discord.bot.service.CharacterService
 import org.springframework.context.MessageSource
 import org.springframework.stereotype.Component
 import reactor.core.publisher.Flux
 import reactor.core.publisher.Mono
-import java.util.*
 
 @Component
 class CharacterCommandHandler(
-    private val messageSource: MessageSource, private val service: CharacterService, private val mapper: CharacterMapper
+    private val messageSource: MessageSource,
+    private val service: CharacterService,
+    private val mapper: CharacterMapper,
+    private val eventPropertiesMapper: EventPropertiesMapper
 ) : CommandHandler {
 
     override fun name(): String {
@@ -28,37 +31,23 @@ class CharacterCommandHandler(
     }
 
     fun handleListAll(event: ChatInputInteractionEvent): Mono<Void> {
-        return doHandleList(event, service.getCharacters(event.interaction.guildId.orElseThrow {
-            IllegalArgumentException(
-                messageSource.getMessage(
-                    "error-no-server-id", null, Locale.forLanguageTag(event.interaction.userLocale)
-                )
-            )
-        }.asLong()))
+        return doHandleList(event, service.getCharacters(eventPropertiesMapper.getServerId(event)))
     }
 
     private fun handleList(event: ChatInputInteractionEvent): Mono<Void> {
-        return doHandleList(event, service.getUserCharacters(event.interaction.guildId.orElseThrow {
-            IllegalArgumentException(
-                messageSource.getMessage(
-                    "error-no-server-id", null, Locale.forLanguageTag(
-                        event.interaction.userLocale
-                    )
-                )
+        return doHandleList(
+            event, service.getUserCharacters(
+                eventPropertiesMapper.getServerId(event), eventPropertiesMapper.getUserId((event))
             )
-        }.asLong(), event.interaction.user.id.asLong()))
+        )
     }
 
     private fun doHandleList(event: ChatInputInteractionEvent, characters: Flux<CharacterDTO>): Mono<Void> {
         return characters.map {
-            mapper.toEmbed(it, Locale.forLanguageTag(event.interaction.userLocale))
+            mapper.toEmbed(it, eventPropertiesMapper.getLocale(event))
         }.collectList().flatMap {
             event.reply().withEmbeds(it).withEphemeral(true).withContent(
-                messageSource.getMessage(
-                    "character-registered", null, Locale.forLanguageTag(
-                        event.interaction.userLocale
-                    )
-                )
+                messageSource.getMessage("character-registered", null, eventPropertiesMapper.getLocale(event))
             )
         }
     }
@@ -67,11 +56,7 @@ class CharacterCommandHandler(
         val character = mapper.fromEvent(event)
         return service.create(character).flatMap {
             event.reply().withEphemeral(true).withContent(
-                messageSource.getMessage(
-                    "character-created", arrayOf(it.name), Locale.forLanguageTag(
-                        event.interaction.userLocale
-                    )
-                )
+                messageSource.getMessage("character-created", arrayOf(it.name), eventPropertiesMapper.getLocale(event))
             )
         }
     }

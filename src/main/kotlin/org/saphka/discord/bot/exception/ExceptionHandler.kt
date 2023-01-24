@@ -13,7 +13,7 @@ class ExceptionHandler {
     fun handleException(event: ApplicationCommandInteractionEvent, ex: Throwable): Mono<Void> {
         logger.warn("Exception occurred when handling event {} ", event, ex)
 
-        return event.reply().withContent("Error occurred: ${ex.message}")
+        return event.reply().withContent("Error occurred: ${ex.message}").withEphemeral(true)
     }
 
 }

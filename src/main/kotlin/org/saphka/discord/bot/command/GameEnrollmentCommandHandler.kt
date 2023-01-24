@@ -2,6 +2,7 @@ package org.saphka.discord.bot.command
 
 import discord4j.core.event.domain.interaction.ChatInputInteractionEvent
 import org.saphka.discord.bot.mapper.CharacterMapper
+import org.saphka.discord.bot.mapper.EventPropertiesMapper
 import org.saphka.discord.bot.model.CharacterDTO
 import org.saphka.discord.bot.model.GameDTO
 import org.saphka.discord.bot.model.GameEnrollmentDTO
@@ -12,7 +13,6 @@ import org.springframework.context.MessageSource
 import org.springframework.stereotype.Component
 import reactor.core.publisher.Mono
 import reactor.util.function.Tuple2
-import java.util.*
 
 @Component
 class GameEnrollmentCommandHandler(
@@ -20,6 +20,7 @@ class GameEnrollmentCommandHandler(
     private val gameService: GameService,
     private val characterService: CharacterService,
     private val characterMapper: CharacterMapper,
+    private val eventPropertiesMapper: EventPropertiesMapper,
     private val messageSource: MessageSource
 ) {
 
@@ -27,13 +28,13 @@ class GameEnrollmentCommandHandler(
         return getGameAndCharacter(event).flatMap {
             service.enroll(
                 GameEnrollmentDTO(
-                    serverId = getServerId(event), gameId = it.t1.id!!, characterId = it.t2.id!!
+                    serverId = eventPropertiesMapper.getServerId(event), gameId = it.t1.id!!, characterId = it.t2.id!!
                 )
             )
         }.flatMap {
             event.reply().withEphemeral(true).withContent(
                 messageSource.getMessage(
-                    "enrolled", null, Locale.forLanguageTag(event.interaction.userLocale)
+                    "enrolled", null, eventPropertiesMapper.getLocale(event)
                 )
             )
         }
@@ -43,27 +44,25 @@ class GameEnrollmentCommandHandler(
         return getGameAndCharacter(event).flatMap {
             service.unEnroll(
                 GameEnrollmentDTO(
-                    serverId = getServerId(event), gameId = it.t1.id!!, characterId = it.t2.id!!
+                    serverId = eventPropertiesMapper.getServerId(event), gameId = it.t1.id!!, characterId = it.t2.id!!
                 )
             )
         }.flatMap {
             event.reply().withEphemeral(true).withContent(
                 messageSource.getMessage(
-                    "un-enrolled", null, Locale.forLanguageTag(event.interaction.userLocale)
+                    "un-enrolled", null, eventPropertiesMapper.getLocale(event)
                 )
             )
         }
     }
 
     fun handleListEnrolled(event: ChatInputInteractionEvent): Mono<Void> {
-        val serverId = getServerId(event)
-        val gameSlug =
-            event.options.first().getOption(FieldName.GAME_SLUG_REF).flatMap { it.value }.map { it.asString() }
-                .orElse("")
+        val serverId = eventPropertiesMapper.getServerId(event)
+        val gameSlug = eventPropertiesMapper.getGameSlug(event)
         return gameService.getBySlug(serverId, gameSlug).flatMapMany {
             service.getEnrolled(serverId, it.id!!)
         }.map { it.characterId }.transform { characterService.getByIds(it) }
-            .map { characterMapper.toEmbed(it, Locale.forLanguageTag(event.interaction.userLocale)) }.collectList()
+            .map { characterMapper.toEmbed(it, eventPropertiesMapper.getLocale(event)) }.collectList()
             .flatMap {
                 val reply = event.reply().withEphemeral(true)
                 if (it.size > 0) {
@@ -71,7 +70,7 @@ class GameEnrollmentCommandHandler(
                 } else {
                     reply.withContent(
                         messageSource.getMessage(
-                            "no-enrollments", null, Locale.forLanguageTag(event.interaction.userLocale)
+                            "no-enrollments", null, eventPropertiesMapper.getLocale(event)
                         )
                     )
                 }
@@ -79,24 +78,12 @@ class GameEnrollmentCommandHandler(
     }
 
     private fun getGameAndCharacter(event: ChatInputInteractionEvent): Mono<Tuple2<GameDTO, CharacterDTO>> {
-        val options = event.options.first()
-        val gameSlug = options.getOption(FieldName.GAME_SLUG_REF).flatMap { it.value }.map { it.asString() }.orElse("")
-        val characterSlug =
-            options.getOption(FieldName.CHARACTER_SLUG_REF).flatMap { it.value }.map { it.asString() }.orElse("")
-        val serverId = getServerId(event)
+        val gameSlug = eventPropertiesMapper.getGameSlug(event)
+        val characterSlug = eventPropertiesMapper.getCharacterSlug(event)
+        val serverId = eventPropertiesMapper.getServerId(event)
 
         return Mono.zip(
             gameService.getBySlug(serverId, gameSlug), characterService.getBySlug(serverId, characterSlug)
         )
-    }
-
-    private fun getServerId(event: ChatInputInteractionEvent): Long {
-        return event.interaction.guildId.orElseThrow {
-            IllegalArgumentException(
-                messageSource.getMessage(
-                    "error-no-server-id", null, Locale.forLanguageTag(event.interaction.userLocale)
-                )
-            )
-        }.asLong()
     }
 }

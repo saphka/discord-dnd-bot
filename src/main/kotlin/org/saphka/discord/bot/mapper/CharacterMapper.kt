@@ -11,7 +11,8 @@ import java.util.*
 
 @Component
 class CharacterMapper(
-    private val messageSource: MessageSource
+    private val messageSource: MessageSource,
+    private val eventPropertiesMapper: EventPropertiesMapper
 ) {
 
     fun toDto(it: Character) = CharacterDTO(
@@ -44,8 +45,8 @@ class CharacterMapper(
     fun fromEvent(event: ChatInputInteractionEvent): CharacterDTO {
         val options = event.options.first()
         return CharacterDTO(
-            serverId = event.interaction.guildId.orElseThrow().asLong(),
-            ownerId = event.interaction.user.id.asLong(),
+            serverId = eventPropertiesMapper.getServerId(event),
+            ownerId = eventPropertiesMapper.getUserId(event),
             slug = options.getOption(FieldName.CHARACTER_SLUG).flatMap { it.value }.map { it.asString() }
                 .orElse(""),
             name = options.getOption(FieldName.CHARACTER_NAME).flatMap { it.value }.map { it.asString() }.orElse(""),

@@ -11,7 +11,9 @@ import java.time.LocalDateTime
 import java.time.format.DateTimeFormatter
 
 @Component
-class GameLogMapper {
+class GameLogMapper(
+    private val eventPropertiesMapper: EventPropertiesMapper
+) {
 
     private val formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss")
 
@@ -39,7 +41,7 @@ class GameLogMapper {
     fun fromEvent(event: ChatInputInteractionEvent, game: GameDTO, character: CharacterDTO): GameLogDTO {
         val options = event.options.first()
         return GameLogDTO(
-            serverId = event.interaction.guildId.orElseThrow().asLong(),
+            serverId = eventPropertiesMapper.getServerId(event),
             gameId = game.id!!,
             characterId = character.id!!,
             createdAt = LocalDateTime.now(),
