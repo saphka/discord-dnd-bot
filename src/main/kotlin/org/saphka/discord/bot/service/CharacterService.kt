@@ -1,6 +1,7 @@
 package org.saphka.discord.bot.service
 
 import org.saphka.discord.bot.mapper.CharacterMapper
+import org.saphka.discord.bot.model.CharacterCreateRequest
 import org.saphka.discord.bot.model.CharacterDTO
 import org.saphka.discord.bot.repository.CharacterRepository
 import org.springframework.dao.DuplicateKeyException
@@ -14,7 +15,7 @@ class CharacterService(
     private val mapper: CharacterMapper
 ) {
 
-    fun create(character: CharacterDTO): Mono<CharacterDTO> {
+    fun create(character: CharacterCreateRequest): Mono<CharacterDTO> {
         return repository.save(
             mapper.toEntity(character)
         ).map {

@@ -5,9 +5,7 @@ import reactor.core.publisher.Mono
 
 
 interface CommandHandler {
-
     fun name(): String
 
     fun handle(event: ChatInputInteractionEvent): Mono<Void>
-
 }

@@ -25,7 +25,7 @@ class CharacterSlugAutocompleteHandler(
             eventPropertiesMapper.getServerId(event),
             eventPropertiesMapper.getUserId(event)
         )
-            .filter { it.slug.startsWith(text) }
+            .filter { it.slug.startsWith(text, true) }
             .map {
                 Tuples.of(it.slug, it.slug)
             }

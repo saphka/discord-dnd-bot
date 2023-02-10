@@ -4,6 +4,7 @@ import discord4j.core.event.domain.interaction.ChatInputInteractionEvent
 import discord4j.core.spec.EmbedCreateSpec
 import org.saphka.discord.bot.command.FieldName
 import org.saphka.discord.bot.domain.Character
+import org.saphka.discord.bot.model.CharacterCreateRequest
 import org.saphka.discord.bot.model.CharacterDTO
 import org.springframework.context.MessageSource
 import org.springframework.stereotype.Component
@@ -16,7 +17,7 @@ class CharacterMapper(
 ) {
 
     fun toDto(it: Character) = CharacterDTO(
-        id = it.id,
+        id = it.id!!,
         serverId = it.serverId,
         ownerId = it.ownerId,
         slug = it.slug,
@@ -25,8 +26,8 @@ class CharacterMapper(
         avatar = it.avatar
     )
 
-    fun toEntity(it: CharacterDTO) = Character(
-        id = it.id,
+    fun toEntity(it: CharacterCreateRequest) = Character(
+        id = null,
         serverId = it.serverId,
         ownerId = it.ownerId,
         slug = it.slug.lowercase(Locale.getDefault()),
@@ -42,9 +43,9 @@ class CharacterMapper(
         .addField(messageSource.getMessage(FieldName.CHARACTER_SLUG, null, locale), it.slug, true)
         .build()
 
-    fun fromEvent(event: ChatInputInteractionEvent): CharacterDTO {
+    fun fromEvent(event: ChatInputInteractionEvent): CharacterCreateRequest {
         val options = event.options.first()
-        return CharacterDTO(
+        return CharacterCreateRequest(
             serverId = eventPropertiesMapper.getServerId(event),
             ownerId = eventPropertiesMapper.getUserId(event),
             slug = options.getOption(FieldName.CHARACTER_SLUG).flatMap { it.value }.map { it.asString() }

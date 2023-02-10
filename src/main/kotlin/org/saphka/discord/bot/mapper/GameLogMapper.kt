@@ -5,6 +5,7 @@ import org.saphka.discord.bot.command.FieldName
 import org.saphka.discord.bot.domain.GameLog
 import org.saphka.discord.bot.model.CharacterDTO
 import org.saphka.discord.bot.model.GameDTO
+import org.saphka.discord.bot.model.GameLogCreateRequest
 import org.saphka.discord.bot.model.GameLogDTO
 import org.springframework.stereotype.Component
 import java.time.LocalDateTime
@@ -18,7 +19,7 @@ class GameLogMapper(
     private val formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss")
 
     fun toDto(it: GameLog) = GameLogDTO(
-        id = it.id,
+        id = it.id!!,
         serverId = it.serverId,
         gameId = it.gameId,
         characterId = it.characterId,
@@ -26,11 +27,11 @@ class GameLogMapper(
         entryText = it.entryText
     )
 
-    fun toEntity(it: GameLogDTO) = GameLog(
-        id = it.id,
+    fun toEntity(it: GameLogCreateRequest, game: GameDTO, character: CharacterDTO) = GameLog(
+        id = null,
         serverId = it.serverId,
-        gameId = it.gameId,
-        characterId = it.characterId,
+        gameId = game.id,
+        characterId = character.id,
         createdAt = it.createdAt,
         entryText = it.entryText
     )
@@ -38,12 +39,12 @@ class GameLogMapper(
     fun toMessage(it: GameLogDTO, character: CharacterDTO?) =
         "${formatter.format(it.createdAt)} - **${character?.name}** - ${it.entryText}"
 
-    fun fromEvent(event: ChatInputInteractionEvent, game: GameDTO, character: CharacterDTO): GameLogDTO {
+    fun fromEvent(event: ChatInputInteractionEvent): GameLogCreateRequest {
         val options = event.options.first()
-        return GameLogDTO(
+        return GameLogCreateRequest(
             serverId = eventPropertiesMapper.getServerId(event),
-            gameId = game.id!!,
-            characterId = character.id!!,
+            gameSlug = eventPropertiesMapper.getGameSlug(event),
+            characterSlug = eventPropertiesMapper.getCharacterSlug(event),
             createdAt = LocalDateTime.now(),
             entryText = options.getOption(FieldName.GAME_LOG_TEXT).flatMap { it.value }.map { it.asString() }.orElse("")
         )

@@ -44,11 +44,12 @@ class GameCommandHandler(
     }
 
     private fun handleList(event: ChatInputInteractionEvent): Mono<Void> {
+        val locale = eventPropertiesMapper.getLocale(event)
         return service.getUpcomingGames(eventPropertiesMapper.getServerId(event)).map {
-            mapper.toEmbed(it, eventPropertiesMapper.getLocale(event))
+            mapper.toEmbed(it, locale)
         }.collectList().flatMap {
             event.reply().withContent(
-                messageSource.getMessage("game-list-header", null, eventPropertiesMapper.getLocale(event))
+                messageSource.getMessage("game-list-header", null, locale)
             ).withEmbeds(it).withEphemeral(true)
         }
     }

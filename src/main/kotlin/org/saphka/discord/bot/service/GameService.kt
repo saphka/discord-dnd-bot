@@ -1,6 +1,7 @@
 package org.saphka.discord.bot.service
 
 import org.saphka.discord.bot.mapper.GameMapper
+import org.saphka.discord.bot.model.GameCreateRequest
 import org.saphka.discord.bot.model.GameDTO
 import org.saphka.discord.bot.repository.GameRepository
 import org.springframework.dao.DuplicateKeyException
@@ -14,7 +15,7 @@ class GameService(
     private val repository: GameRepository,
     private val mapper: GameMapper
 ) {
-    fun create(game: GameDTO): Mono<GameDTO> {
+    fun create(game: GameCreateRequest): Mono<GameDTO> {
         return repository.save(
             mapper.toEntity(game)
         ).map {

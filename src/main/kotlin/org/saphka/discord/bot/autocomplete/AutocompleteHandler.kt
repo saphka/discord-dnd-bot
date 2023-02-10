@@ -8,5 +8,4 @@ interface AutocompleteHandler {
     fun field(): String
 
     fun handle(event: ChatInputAutoCompleteEvent): Flux<Tuple2<String, String>>
-
 }

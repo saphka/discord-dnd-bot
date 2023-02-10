@@ -4,6 +4,7 @@ import discord4j.core.event.domain.interaction.ChatInputInteractionEvent
 import discord4j.core.spec.EmbedCreateSpec
 import org.saphka.discord.bot.command.FieldName
 import org.saphka.discord.bot.domain.Game
+import org.saphka.discord.bot.model.GameCreateRequest
 import org.saphka.discord.bot.model.GameDTO
 import org.springframework.context.MessageSource
 import org.springframework.stereotype.Component
@@ -21,8 +22,8 @@ class GameMapper(
 
     val formatter: DateTimeFormatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm")
 
-    fun toEntity(it: GameDTO) = Game(
-        id = it.id,
+    fun toEntity(it: GameCreateRequest) = Game(
+        id = null,
         serverId = it.serverId,
         slug = it.slug.lowercase(Locale.getDefault()),
         name = it.name,
@@ -31,7 +32,7 @@ class GameMapper(
     )
 
     fun toDto(it: Game) = GameDTO(
-        id = it.id,
+        id = it.id!!,
         serverId = it.serverId,
         slug = it.slug,
         name = it.name,
@@ -51,9 +52,9 @@ class GameMapper(
         )
         .build()
 
-    fun fromEvent(event: ChatInputInteractionEvent): GameDTO {
+    fun fromEvent(event: ChatInputInteractionEvent): GameCreateRequest {
         val options = event.options.first()
-        return GameDTO(
+        return GameCreateRequest(
             serverId = eventPropertiesMapper.getServerId(event),
             slug = options.getOption(FieldName.GAME_SLUG).flatMap { it.value }.map { it.asString() }.orElse(""),
             name = options.getOption(FieldName.GAME_NAME).flatMap { it.value }.map { it.asString() }.orElse(""),

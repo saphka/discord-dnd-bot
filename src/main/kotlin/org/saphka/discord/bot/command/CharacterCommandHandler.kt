@@ -43,11 +43,12 @@ class CharacterCommandHandler(
     }
 
     private fun doHandleList(event: ChatInputInteractionEvent, characters: Flux<CharacterDTO>): Mono<Void> {
+        val locale = eventPropertiesMapper.getLocale(event)
         return characters.map {
-            mapper.toEmbed(it, eventPropertiesMapper.getLocale(event))
+            mapper.toEmbed(it, locale)
         }.collectList().flatMap {
             event.reply().withEmbeds(it).withEphemeral(true).withContent(
-                messageSource.getMessage("character-registered", null, eventPropertiesMapper.getLocale(event))
+                messageSource.getMessage("character-registered", null, locale)
             )
         }
     }
