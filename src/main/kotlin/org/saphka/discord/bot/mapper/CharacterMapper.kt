@@ -1,6 +1,7 @@
 package org.saphka.discord.bot.mapper
 
 import discord4j.core.event.domain.interaction.ChatInputInteractionEvent
+import discord4j.core.`object`.entity.Member
 import discord4j.core.spec.EmbedCreateSpec
 import org.saphka.discord.bot.command.FieldName
 import org.saphka.discord.bot.domain.Character
@@ -36,10 +37,11 @@ class CharacterMapper(
         avatar = it.avatar
     )
 
-    fun toEmbed(it: CharacterDTO, locale: Locale) = EmbedCreateSpec.builder()
+    fun toEmbed(it: CharacterDTO, member: Member?, locale: Locale) = EmbedCreateSpec.builder()
         .title(it.name)
         .url(it.sheet)
         .image(it.avatar)
+        .author(member?.displayName ?: "", null, member?.avatarUrl)
         .addField(messageSource.getMessage(FieldName.CHARACTER_SLUG, null, locale), it.slug, true)
         .build()
 
