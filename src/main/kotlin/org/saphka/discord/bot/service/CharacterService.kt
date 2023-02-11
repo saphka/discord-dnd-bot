@@ -48,4 +48,12 @@ class CharacterService(
     fun getByIds(ids: Flux<Long>): Flux<CharacterDTO> {
         return repository.findAllById(ids).map { mapper.toDto(it) }
     }
+
+    fun getUserCharactersWithSlugFilter(serverId: Long, userId: Long, slugPrefix: String): Flux<CharacterDTO> {
+        return repository.findByServerIdAndOwnerIdAndSlugStartingWithIgnoringCaseOrderByName(
+            serverId,
+            userId,
+            slugPrefix
+        ).map { mapper.toDto(it) }
+    }
 }

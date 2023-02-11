@@ -21,8 +21,7 @@ class GameSlugAutocompleteHandler(
     override fun handle(event: ChatInputAutoCompleteEvent): Flux<Tuple2<String, String>> {
         val text = event.focusedOption.value.map { it.asString() }.orElse("").lowercase()
 
-        return service.getUpcomingGames(eventPropertiesMapper.getServerId(event))
-            .filter { it.slug.startsWith(text) }
+        return service.getRecentGamesWithSlugFilter(eventPropertiesMapper.getServerId(event), text)
             .map {
                 Tuples.of(it.slug, it.slug)
             }

@@ -36,7 +36,7 @@ class GameCommandHandler(
             event.reply().withContent(
                 messageSource.getMessage(
                     "game-announce",
-                    arrayOf(it.name, it.startsAt.format(mapper.formatter)),
+                    arrayOf(it.name, mapper.formatGameTime(it.startsAt)),
                     eventPropertiesMapper.getLocale(event)
                 )
             )
@@ -45,7 +45,7 @@ class GameCommandHandler(
 
     private fun handleList(event: ChatInputInteractionEvent): Mono<Void> {
         val locale = eventPropertiesMapper.getLocale(event)
-        return service.getUpcomingGames(eventPropertiesMapper.getServerId(event)).map {
+        return service.getRecentGames(eventPropertiesMapper.getServerId(event)).map {
             mapper.toEmbed(it, locale)
         }.collectList().flatMap {
             event.reply().withContent(

@@ -6,6 +6,7 @@ import org.saphka.discord.bot.command.FieldName
 import org.saphka.discord.bot.domain.Game
 import org.saphka.discord.bot.model.GameCreateRequest
 import org.saphka.discord.bot.model.GameDTO
+import org.saphka.discord.bot.service.TimeAccessor
 import org.springframework.context.MessageSource
 import org.springframework.stereotype.Component
 import java.time.LocalDateTime
@@ -17,10 +18,11 @@ import java.util.*
 @Component
 class GameMapper(
     private val messageSource: MessageSource,
-    private val eventPropertiesMapper: EventPropertiesMapper
+    private val eventPropertiesMapper: EventPropertiesMapper,
+    private val timeAccessor: TimeAccessor
 ) {
 
-    val formatter: DateTimeFormatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm")
+    private val formatter: DateTimeFormatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm")
 
     fun toEntity(it: GameCreateRequest) = Game(
         id = null,
@@ -39,6 +41,8 @@ class GameMapper(
         startsAt = it.startsAt,
         tier = it.tier
     )
+
+    fun formatGameTime(dateTime: LocalDateTime): String = formatter.format(dateTime)
 
     fun toEmbed(it: GameDTO, locale: Locale) = EmbedCreateSpec.builder()
         .title(it.name)
@@ -60,7 +64,7 @@ class GameMapper(
             name = options.getOption(FieldName.GAME_NAME).flatMap { it.value }.map { it.asString() }.orElse(""),
             startsAt = options.getOption(FieldName.GAME_DATE).flatMap { it.value }.map { it.asString() }
                 .map { LocalDateTime.parse(it, formatter) }
-                .orElse(LocalDateTime.now().truncatedTo(ChronoUnit.HOURS).plusHours(1)),
+                .orElse(timeAccessor.getCurrentTime().truncatedTo(ChronoUnit.HOURS).plusHours(1)),
             tier = options.getOption(FieldName.GAME_TIER).flatMap { it.value }.map { it.asString() }.orElse(""),
         )
     }

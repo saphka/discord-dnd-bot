@@ -8,7 +8,13 @@ import java.time.LocalDateTime
 
 interface GameRepository : R2dbcRepository<Game, Long> {
 
-    fun findByServerIdAndStartsAtAfter(serverId: Long, startsAt: LocalDateTime): Flux<Game>
+    fun findByServerIdAndStartsAtAfterOrderByStartsAt(serverId: Long, startsAt: LocalDateTime): Flux<Game>
+
+    fun findByServerIdAndStartsAtAfterAndSlugStartingWithIgnoringCaseOrderByStartsAt(
+        serverId: Long,
+        startsAt: LocalDateTime,
+        slugPrefix: String
+    ): Flux<Game>
 
     fun findFirstByServerIdAndSlug(serverId: Long, slug: String): Mono<Game>
 

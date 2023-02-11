@@ -9,6 +9,12 @@ interface CharacterRepository : R2dbcRepository<Character, Long> {
 
     fun findByServerIdAndOwnerIdOrderByName(serverId: Long, ownerId: Long): Flux<Character>
 
+    fun findByServerIdAndOwnerIdAndSlugStartingWithIgnoringCaseOrderByName(
+        serverId: Long,
+        ownerId: Long,
+        slugPrefix: String
+    ): Flux<Character>
+
     fun findByServerIdOrderByName(serverId: Long): Flux<Character>
 
     fun findFirstByServerIdAndSlug(serverId: Long, slug: String): Mono<Character>

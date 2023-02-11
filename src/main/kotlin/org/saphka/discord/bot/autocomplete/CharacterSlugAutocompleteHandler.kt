@@ -21,13 +21,12 @@ class CharacterSlugAutocompleteHandler(
     override fun handle(event: ChatInputAutoCompleteEvent): Flux<Tuple2<String, String>> {
         val text = event.focusedOption.value.map { it.asString() }.orElse("").lowercase()
 
-        return service.getUserCharacters(
+        return service.getUserCharactersWithSlugFilter(
             eventPropertiesMapper.getServerId(event),
-            eventPropertiesMapper.getUserId(event)
-        )
-            .filter { it.slug.startsWith(text, true) }
-            .map {
-                Tuples.of(it.slug, it.slug)
-            }
+            eventPropertiesMapper.getUserId(event),
+            text
+        ).map {
+            Tuples.of(it.slug, it.slug)
+        }
     }
 }

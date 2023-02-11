@@ -7,13 +7,14 @@ import org.saphka.discord.bot.model.CharacterDTO
 import org.saphka.discord.bot.model.GameDTO
 import org.saphka.discord.bot.model.GameLogCreateRequest
 import org.saphka.discord.bot.model.GameLogDTO
+import org.saphka.discord.bot.service.TimeAccessor
 import org.springframework.stereotype.Component
-import java.time.LocalDateTime
 import java.time.format.DateTimeFormatter
 
 @Component
 class GameLogMapper(
-    private val eventPropertiesMapper: EventPropertiesMapper
+    private val eventPropertiesMapper: EventPropertiesMapper,
+    private val timeAccessor: TimeAccessor
 ) {
 
     private val formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss")
@@ -45,7 +46,7 @@ class GameLogMapper(
             serverId = eventPropertiesMapper.getServerId(event),
             gameSlug = eventPropertiesMapper.getGameSlug(event),
             characterSlug = eventPropertiesMapper.getCharacterSlug(event),
-            createdAt = LocalDateTime.now(),
+            createdAt = timeAccessor.getCurrentTime(),
             entryText = options.getOption(FieldName.GAME_LOG_TEXT).flatMap { it.value }.map { it.asString() }.orElse("")
         )
     }
