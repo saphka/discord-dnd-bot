@@ -1,5 +1,7 @@
 package org.saphka.discord.bot.mapper
 
+import discord4j.common.util.Snowflake
+import discord4j.core.GatewayDiscordClient
 import discord4j.core.event.domain.interaction.ChatInputInteractionEvent
 import discord4j.core.`object`.entity.Member
 import discord4j.core.spec.EmbedCreateSpec
@@ -9,7 +11,10 @@ import org.saphka.discord.bot.model.CharacterCreateRequest
 import org.saphka.discord.bot.model.CharacterDTO
 import org.springframework.context.MessageSource
 import org.springframework.stereotype.Component
+import reactor.core.publisher.Flux
+import reactor.core.publisher.Mono
 import java.util.*
+import java.util.stream.Collectors
 
 @Component
 class CharacterMapper(
@@ -45,6 +50,29 @@ class CharacterMapper(
         .addField(messageSource.getMessage(FieldName.CHARACTER_SLUG, null, locale), it.slug, true)
         .build()
 
+    fun toEmbed(
+        characters: Flux<CharacterDTO>,
+        serverId: Long,
+        client: GatewayDiscordClient,
+        locale: Locale
+    ): Mono<List<EmbedCreateSpec>> {
+        return characters.map {
+            Snowflake.of(it.ownerId)
+        }.collect(Collectors.toSet())
+            .flatMapMany { client.requestMembers(Snowflake.of(serverId), it) }
+            .collectMap { it.id.asLong() }
+            .zipWith(characters.collectList())
+            .map {
+                it.t2.map { characterDTO ->
+                    this.toEmbed(
+                        characterDTO,
+                        it.t1[characterDTO.ownerId],
+                        locale
+                    )
+                }
+            }
+    }
+
     fun fromEvent(event: ChatInputInteractionEvent): CharacterCreateRequest {
         val options = event.options.first()
         return CharacterCreateRequest(
@@ -59,5 +87,4 @@ class CharacterMapper(
                 .orElse(""),
         )
     }
-
 }

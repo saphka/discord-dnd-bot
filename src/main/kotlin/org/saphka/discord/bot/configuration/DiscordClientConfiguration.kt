@@ -11,7 +11,12 @@ import org.springframework.context.annotation.Profile
 import java.time.Duration
 
 @ConfigurationProperties(prefix = "bot")
-data class BotProperties(val appId: Long, val token: String, val startsAtBefore: Duration)
+data class BotProperties(
+    val appId: Long,
+    val token: String,
+    val startsAtBefore: Duration,
+    val embedsSize: Int
+)
 
 @Configuration
 @EnableConfigurationProperties(BotProperties::class)

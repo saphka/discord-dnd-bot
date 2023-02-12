@@ -14,5 +14,10 @@
       "name": "bot.starts-at-before",
       "type": "java.lang.String",
       "description": "Show games that are younger than this."
+    },
+    {
+      "name": "bot.embeds-size",
+      "type": "java.lang.String",
+      "description": "Maximum size of embeds in one reply."
     }
   ] }

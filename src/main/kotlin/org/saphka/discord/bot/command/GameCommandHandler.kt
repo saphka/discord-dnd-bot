@@ -1,6 +1,7 @@
 package org.saphka.discord.bot.command
 
 import discord4j.core.event.domain.interaction.ChatInputInteractionEvent
+import org.saphka.discord.bot.mapper.EmbedMapper
 import org.saphka.discord.bot.mapper.EventPropertiesMapper
 import org.saphka.discord.bot.mapper.GameMapper
 import org.saphka.discord.bot.service.GameService
@@ -14,6 +15,7 @@ class GameCommandHandler(
     private val service: GameService,
     private val mapper: GameMapper,
     private val eventPropertiesMapper: EventPropertiesMapper,
+    private val embedMapper: EmbedMapper,
     private val enrollmentCommandHandler: GameEnrollmentCommandHandler
 ) : CommandHandler {
 
@@ -48,9 +50,13 @@ class GameCommandHandler(
         return service.getRecentGames(eventPropertiesMapper.getServerId(event)).map {
             mapper.toEmbed(it, locale)
         }.collectList().flatMap {
-            event.reply().withContent(
-                messageSource.getMessage("game-list-header", null, locale)
-            ).withEmbeds(it).withEphemeral(true)
+            embedMapper.splitAndChain(
+                event.reply().withContent(
+                    messageSource.getMessage("game-list-header", null, locale)
+                ).withEphemeral(true),
+                it,
+                event::createFollowup
+            )
         }
     }
 }

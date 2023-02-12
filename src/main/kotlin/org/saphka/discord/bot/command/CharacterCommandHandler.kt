@@ -1,8 +1,8 @@
 package org.saphka.discord.bot.command
 
-import discord4j.common.util.Snowflake
 import discord4j.core.event.domain.interaction.ChatInputInteractionEvent
 import org.saphka.discord.bot.mapper.CharacterMapper
+import org.saphka.discord.bot.mapper.EmbedMapper
 import org.saphka.discord.bot.mapper.EventPropertiesMapper
 import org.saphka.discord.bot.model.CharacterDTO
 import org.saphka.discord.bot.service.CharacterService
@@ -10,14 +10,14 @@ import org.springframework.context.MessageSource
 import org.springframework.stereotype.Component
 import reactor.core.publisher.Flux
 import reactor.core.publisher.Mono
-import java.util.stream.Collectors
 
 @Component
 class CharacterCommandHandler(
     private val messageSource: MessageSource,
     private val service: CharacterService,
     private val mapper: CharacterMapper,
-    private val eventPropertiesMapper: EventPropertiesMapper
+    private val eventPropertiesMapper: EventPropertiesMapper,
+    private val embedMapper: EmbedMapper
 ) : CommandHandler {
 
     override fun name(): String {
@@ -53,21 +53,20 @@ class CharacterCommandHandler(
     ): Mono<Void> {
         val locale = eventPropertiesMapper.getLocale(event)
 
-        return characters.map {
-            Snowflake.of(it.ownerId)
-        }.collect(Collectors.toSet())
-            .flatMapMany { event.client.requestMembers(Snowflake.of(serverId), it) }
-            .collectMap { it.id.asLong() }
-            .zipWith(characters.collectList())
-            .flatMap {
-                val embeds = it.t2.map { characterDTO ->
-                    mapper.toEmbed(characterDTO, it.t1[characterDTO.ownerId], locale)
-                }
-
-                event.reply().withEmbeds(embeds).withEphemeral(true).withContent(
+        return mapper.toEmbed(
+            characters,
+            serverId,
+            event.client,
+            locale
+        ).flatMap { embeds ->
+            embedMapper.splitAndChain(
+                event.reply().withEphemeral(true).withContent(
                     messageSource.getMessage("character-registered", null, locale)
-                )
-            }
+                ),
+                embeds,
+                event::createFollowup
+            )
+        }
     }
 
     private fun handleCreate(event: ChatInputInteractionEvent): Mono<Void> {

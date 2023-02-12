@@ -1,4 +1,6 @@
 spring:
+  profiles:
+    active: prod
   application:
     name: discord-bot-app
   r2dbc:
@@ -12,4 +14,5 @@ spring:
 
 bot:
   app-id: 1066031966450876558
+  embeds-size: 10
   starts-at-before: P7D

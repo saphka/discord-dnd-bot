@@ -13,4 +13,5 @@ spring:
 bot:
   app-id: 0
   token: dummy
+  embeds-size: 10
   starts-at-before: P7D
