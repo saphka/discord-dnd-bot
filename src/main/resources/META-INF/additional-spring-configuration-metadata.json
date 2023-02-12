@@ -1,0 +1,18 @@
+{
+  "properties": [
+    {
+      "name": "bot.app-id",
+      "type": "java.lang.String",
+      "description": "Discord Application ID for Bot."
+    },
+    {
+      "name": "bot.token",
+      "type": "java.lang.String",
+      "description": "Discord Bot secret token."
+    },
+    {
+      "name": "bot.starts-at-before",
+      "type": "java.lang.String",
+      "description": "Show games that are younger than this."
+    }
+  ] }

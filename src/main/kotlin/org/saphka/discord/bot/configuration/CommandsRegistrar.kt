@@ -6,12 +6,12 @@ import discord4j.discordjson.json.ApplicationCommandRequest
 import discord4j.rest.RestClient
 import org.springframework.beans.factory.InitializingBean
 import org.springframework.beans.factory.annotation.Value
+import org.springframework.context.annotation.Profile
 import org.springframework.core.io.Resource
 import org.springframework.stereotype.Component
 
-//const val serverId = 1066062957974392893
-
 @Component
+@Profile("prod")
 class CommandsRegistrar(
     private val restClient: RestClient,
     @Value("classpath:commands/*")
@@ -25,12 +25,11 @@ class CommandsRegistrar(
 
         restClient.applicationService.bulkOverwriteGlobalApplicationCommand(
             botProperties.appId,
-            // serverId,
             commands.map {
                 it.inputStream.use { inp ->
                     specialMapper.readValue(inp, ApplicationCommandRequest::class.java)
                 }
-            }.toList()
+            }
         ).subscribe()
     }
 

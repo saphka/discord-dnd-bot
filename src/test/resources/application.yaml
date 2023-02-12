@@ -2,14 +2,15 @@ spring:
   application:
     name: discord-bot-app
   r2dbc:
-    url: 'r2dbc:h2:file:///~/database/dndbot'
+    url: 'r2dbc:h2:mem:///dndbot'
     username: sa
     password:
   liquibase:
-    url: 'jdbc:h2:file:~/database/dndbot'
+    url: 'jdbc:h2:mem:/dndbot'
     user: ${spring.r2dbc.username}
     password: ${spring.r2dbc.password}
 
 bot:
-  app-id: 1066031966450876558
+  app-id: 0
+  token: dummy
   starts-at-before: P7D
