@@ -8,6 +8,7 @@ import reactor.core.publisher.Mono
 interface GameEnrollmentRepository : R2dbcRepository<GameEnrollment, Long> {
 
     fun deleteByServerIdAndGameIdAndCharacterId(serverId: Long, gameId: Long, characterId: Long): Mono<Long>
+
     fun findByServerIdAndGameIdAndCharacterId(serverId: Long, gameId: Long, characterId: Long): Mono<GameEnrollment>
 
     fun findByServerIdAndGameId(serverId: Long, gameId: Long): Flux<GameEnrollment>

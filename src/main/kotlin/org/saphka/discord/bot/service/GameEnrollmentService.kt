@@ -28,8 +28,8 @@ class GameEnrollmentService(
                 characterId = it.t2.id
             ).switchIfEmpty(
                 repository.save(mapper.toEntity(enrollment, it.t1, it.t2))
-            ).map { enr -> mapper.toDto(enr) }
-        }
+            )
+        }.map { enr -> mapper.toDto(enr) }
     }
 
     fun unEnroll(enrollment: GameEnrollmentChangeRequest): Mono<Long> {
