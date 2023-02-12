@@ -2,11 +2,11 @@ spring:
   application:
     name: discord-bot-app
   r2dbc:
-    url: 'r2dbc:h2:mem:///dndbot'
+    url: 'r2dbc:h2:file:///${java.io.tmpdir}/dndbot/test-db'
     username: sa
     password:
   liquibase:
-    url: 'jdbc:h2:mem:/dndbot'
+    url: 'jdbc:h2:file:${java.io.tmpdir}/dndbot/test-db'
     user: ${spring.r2dbc.username}
     password: ${spring.r2dbc.password}
 
