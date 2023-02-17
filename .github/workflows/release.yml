@@ -38,14 +38,16 @@ jobs:
           name: ansible
           known_hosts: ${{ secrets.ANSIBLE_SSH_KNOWN_HOSTS }}
           if_key_exists: replace
-      - name: Set ansible vault key
+      - name: Set ansible vault key and inventory
         env:
           ANSIBLE_VAULT_KEY: ${{ secrets.ANSIBLE_VAULT_KEY }}
+          ANSIBLE_INVENTORY: ${{ env.ANSIBLE_INVENTORY }}
         run: |
           echo "$ANSIBLE_VAULT_KEY" > .ansible_vault_key
           chmod 600 .ansible_vault_key
+          echo "$ANSIBLE_INVENTORY" > ansible_inventory.yml
       - uses: actions/download-artifact@v3
         with:
           name: discord-dnd-bot.jar
           path: ansible/roles/service/files/
-      - run: ansible-playbook ansible/setup_server.yml -i ansible/inventory/sprintbox.yml --vault-password-file .ansible_vault_key
+      - run: ansible-playbook ansible/setup_server.yml -i ansible_inventory.yml --vault-password-file .ansible_vault_key
